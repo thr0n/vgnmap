@@ -1,12 +1,17 @@
 <script lang="ts">
-  export let restaurants: RestaurantProps[];
-
-let mymap = null
-
+  import type {
+    RestaurantPosition,
+    RestaurantProps,
+  } from "../types/Restaurant";
   import { onMount, afterUpdate } from "svelte";
   import L from "leaflet";
   import AddressPopup from "./AddressPopup.svelte";
-    import type { RestaurantProps } from "../types/Restaurant";
+
+  export let restaurants: RestaurantProps[];
+  export let centerCoordinates: RestaurantPosition;
+  export let zoom: number;
+
+  let mymap = null;
 
   const accessToken = process.env.API_KEY;
 
@@ -20,23 +25,23 @@ let mymap = null
   }
 
   afterUpdate(() => {
-      restaurants.map((r) => {
-      console.log("Working on: " + r.name);
+    mymap.setView(centerCoordinates, zoom);
+    restaurants.map((r) => {
       let marker = L.marker(r.position).addTo(mymap);
       bindPopup(marker, (container) => {
         let c = new AddressPopup({
           target: container,
           props: {
-              name: r.name
-          }
+            name: r.name,
+          },
         });
-        return c
+        return c;
       });
     });
-  })
+  });
 
   onMount(() => {
-    mymap = L.map("mapid").setView([53.58, 9.99], 12);
+    mymap = L.map("mapid").setView([53.58, 9.99], zoom);
     L.tileLayer(
       "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
       {
@@ -58,6 +63,6 @@ let mymap = null
 
 <style>
   #mapid {
-    height: 512px;
+    min-height: 100vh;
   }
 </style>

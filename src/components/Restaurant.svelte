@@ -18,6 +18,9 @@
 
 <style>
   .restaurant-card {
-    border: 2px solid green;
+    border: 2px solid lightgray;
+    width: 30vw;
+    margin: auto;
+    margin-bottom: 8px;
   }
 </style>
