@@ -1,0 +1,37 @@
+{
+    "restaurants": [{
+        "name": "innerluck",
+        "position": [53.5904053, 9.9425346],
+        "website": "https://www.innerluck.de/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Vistro Hamburg",
+        "position": [53.61595306399586, 10.077613167738791],
+        "website": "https://vistro-hamburg.de/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Schlecks Hamburg",
+        "position": [53.55259968468729, 9.923018063985761],
+        "website": "https://www.schlecks.com/",
+        "veganOnly": false,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Vegan Pizza Project",
+        "position": [53.575010653272464, 10.040464022986821],
+        "website": "http://www.veganpizzaproject.de/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Bodhi München",
+        "position": [48.1357845607709, 11.543135740571408],
+        "website": "http://www.bodhivegan.de/",
+        "veganOnly": true,
+        "city": "München"
+      }]
+}
