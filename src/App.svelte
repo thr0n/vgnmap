@@ -1,5 +1,6 @@
 <script lang="ts">
 	export let name: string;
+	console.log(process)
 </script>
 
 <main>
