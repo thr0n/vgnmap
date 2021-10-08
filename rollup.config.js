@@ -59,12 +59,12 @@ export default {
     css({ output: "bundle.css" }),
 
     replace({
-      process: JSON.stringify({
-        env: {
-          isProd: production,
-          API_KEY: process.env.MAPBOX_API_KEY,
-        },
-      }),
+      preventAssignment: true,
+      "process.env.NODE_ENV": JSON.stringify(
+        production ? "production" : "development"
+      ),
+      "process.env.RESTAURANT_API_HOST": JSON.stringify(production ? '' : "http://localhost:3000/restaurants"),
+      "process.env.API_KEY": JSON.stringify(process.env.MAPBOX_API_KEY),
     }),
 
     // If you have external dependencies installed from
