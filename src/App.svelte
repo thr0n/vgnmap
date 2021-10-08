@@ -4,23 +4,31 @@
   import Map from "./components/Map.svelte";
   import Restaurant from "./components/Restaurant.svelte";
   import type { RestaurantPosition, RestaurantProps } from "./types/Restaurant";
+  import { detailZoom, selectedCity, selectedStoreLatLon } from "./stores/selection";
 
   let restaurants: RestaurantProps[] = [];
-  let selectedCity = "Hamburg";
-  let centerCoordinates: RestaurantPosition = [53.58, 9.99];
   let zoom = 12;
 
   function toggleCity() {
-    if (selectedCity === "Hamburg") {
-      selectedCity = "München";
-      centerCoordinates = [48.1357845607709, 11.543135740571408];
+    if ($selectedCity === "Hamburg") {
+      $selectedCity = "München";
+      $selectedStoreLatLon = [48.1357845607709, 11.543135740571408];
+      $detailZoom = false
       zoom = 13;
     } else {
-      selectedCity = "Hamburg";
-      centerCoordinates = [53.58, 9.99];
+      $selectedCity = "Hamburg";
+      $selectedStoreLatLon = [53.58, 9.99];
+      $detailZoom = false
       zoom = 12;
     }
   }
+
+  const handleRestaurantFocus = (position: RestaurantPosition) => {
+    $selectedStoreLatLon = position;
+    $detailZoom = true;
+  }
+
+  $selectedStoreLatLon = [53.58, 9.99];
 
   onMount(async () => {
     const response = await axios.get<RestaurantProps[]>(
@@ -32,16 +40,26 @@
 
 <main>
   <div class="app-container">
-    <div class="restaurant-tiles">
-      <h1>vgn.map</h1>
-      <p class="clickable" on:click={toggleCity}>
-        Ausgewählte Stadt: <span class="selected-city">{selectedCity}</span>
-      </p>
-      {#each restaurants.filter((r) => r.city === selectedCity) as restaurant}
-        <Restaurant {...restaurant} />
-      {/each}
+    <div class="restaurant-section">
+      <div class="header-container">
+        <h1>Vegan essen in...</h1>
+          <h2 class="clickable" on:click={toggleCity}>{$selectedCity}</h2>
+      </div>
+      <div class="restaurant-container">
+        {#each restaurants.filter((r) => r.city === $selectedCity).sort((a, b) => a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0) as restaurant (restaurant.name)}
+          <div
+            on:mouseover={() => {handleRestaurantFocus(restaurant.position)}}
+            on:focus={() => {handleRestaurantFocus(restaurant.position)}}
+            on:mouseenter={() => {handleRestaurantFocus(restaurant.position)}}
+          >
+            <Restaurant {...restaurant} />
+          </div>
+        {/each}
+      </div>
     </div>
-    <Map {restaurants} {centerCoordinates} {zoom} />
+    {#if restaurants.length > 0}
+      <Map {restaurants} centerCoordinates={$selectedStoreLatLon} {zoom} />
+    {/if}
   </div>
 </main>
 
@@ -68,15 +86,27 @@
 
   .app-container {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 2fr 1fr;
     height: 100vh;
-  }
-
-  .selected-city {
-    font-weight: 800;
   }
 
   .clickable {
     cursor: pointer;
+  }  
+
+  .header-section {
+    height: 20vh;
+  }
+  
+  .header-container {
+    margin: 0 auto;
+    width: 66%;
+    border-bottom: 3px dotted #ff3e00; 
+    margin-bottom: 24px;
+  }
+  
+  .restaurant-container {
+    overflow-y: scroll;
+    height: 80vh;
   }
 </style>

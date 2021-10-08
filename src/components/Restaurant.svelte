@@ -18,9 +18,11 @@
 
 <style>
   .restaurant-card {
-    border: 2px solid lightgray;
-    width: 30vw;
-    margin: auto;
+    border-bottom: 3px dotted #EAEAEA;
+    margin: 0 auto;
     margin-bottom: 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    min-height: 330px;
   }
 </style>

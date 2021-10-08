@@ -6,6 +6,7 @@
   import { onMount, afterUpdate } from "svelte";
   import L from "leaflet";
   import AddressPopup from "./AddressPopup.svelte";
+  import { detailZoom } from "../stores/selection";
 
   export let restaurants: RestaurantProps[];
   export let centerCoordinates: RestaurantPosition;
@@ -25,7 +26,12 @@
   }
 
   afterUpdate(() => {
-    mymap.setView(centerCoordinates, zoom);
+    mymap.setZoom($detailZoom ? zoom + 2 : zoom)
+    mymap.panTo(centerCoordinates);
+  });
+
+  onMount(() => {
+    mymap = L.map("mapid").setView([53.58, 9.99], zoom);
     restaurants.map((r) => {
       let marker = L.marker(r.position).addTo(mymap);
       bindPopup(marker, (container) => {
@@ -38,10 +44,6 @@
         return c;
       });
     });
-  });
-
-  onMount(() => {
-    mymap = L.map("mapid").setView([53.58, 9.99], zoom);
     L.tileLayer(
       "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
       {

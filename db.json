@@ -4,6 +4,8 @@
         "position": [53.5904053, 9.9425346],
         "website": "https://www.innerluck.de/",
         "veganOnly": true,
+        "street": "Hagenbeckstraße 124a",
+        "zip": "22527",
         "city": "Hamburg"
       },
       {
@@ -14,8 +16,15 @@
         "city": "Hamburg"
       },
       {
-        "name": "Schlecks Hamburg",
+        "name": "Schlecks Hamburg-Ottensen",
         "position": [53.55259968468729, 9.923018063985761],
+        "website": "https://www.schlecks.com/",
+        "veganOnly": false,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Schlecks Hamburg-Hoheluft",
+        "position": [53.578094679980126, 9.978222734729766],
         "website": "https://www.schlecks.com/",
         "veganOnly": false,
         "city": "Hamburg"
@@ -33,5 +42,61 @@
         "website": "http://www.bodhivegan.de/",
         "veganOnly": true,
         "city": "München"
+      },
+      {
+        "name": "Froindlichst - Winterhude",
+        "position": [53.594000019937845, 10.006396589989153],
+        "website": "http://www.froindlichst.com/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Froindlichst - Ottensen",
+        "position": [53.55830187089867, 9.925369481008019],
+        "website": "http://www.froindlichst.com/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Kjeks",
+        "position": [53.563237964304285, 9.967908574624625],
+        "website": "http://www.kjeks.de/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "An Vegan House",
+        "position": [53.5810512365219, 10.01242025605222],
+        "website": "https://www.facebook.com/anveganhouse/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Ta Vegan House",
+        "position": [53.54560420238628, 9.976004013723438],
+        "website": "https://www.taveganhouse.com/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Vincent Vegan Hamburg-Altona",
+        "position": [53.55566857166501, 9.939227858256123],
+        "website": "https://vincent-vegan.com/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "Vincent Vegan Europa Passage",
+        "position": [53.55311914545467, 9.988666334880095],
+        "website": "https://vincent-vegan.com/",
+        "veganOnly": true,
+        "city": "Hamburg"
+      },
+      {
+        "name": "The Vegal Eagle",
+        "position": [53.64465353945084, 10.012891542562139],
+        "website": "https://www.theveganeagle.com/",
+        "veganOnly": true,
+        "city": "Hamburg"
       }]
 }
