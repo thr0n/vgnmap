@@ -16,6 +16,7 @@
     "@rollup/plugin-typescript": "^8.2.5",
     "@tsconfig/svelte": "^2.0.1",
     "@types/leaflet": "^1.7.5",
+    "node-sass": "^6.0.1",
     "prettier": "^2.4.1",
     "prettier-plugin-svelte": "^2.4.0",
     "rollup": "^2.58.0",
