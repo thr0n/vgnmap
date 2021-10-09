@@ -16,13 +16,10 @@
   </p>
 </div>
 
-<style>
+<style lang="scss">
   .restaurant-card {
     border-bottom: 3px dotted #EAEAEA;
-    margin: 0 auto;
-    margin-bottom: 8px;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin: 0 20px 8px 20px;
     min-height: 330px;
   }
 </style>

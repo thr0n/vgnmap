@@ -12,11 +12,11 @@
   export let centerCoordinates: RestaurantPosition;
   export let zoom: number;
 
+  const accessToken = process.env.API_KEY;
+  
   let mymap = null;
 
-  const accessToken = process.env.API_KEY;
-
-  function bindPopup(marker, createFn) {
+  const bindPopup = (marker, createFn) => {
     let popupComponent;
     marker.bindPopup(() => {
       let container = L.DomUtil.create("div");
@@ -25,10 +25,7 @@
     });
   }
 
-  afterUpdate(() => {
-    mymap.setZoom($detailZoom ? zoom + 2 : zoom)
-    mymap.panTo(centerCoordinates);
-  });
+  afterUpdate(() => mymap.setView(centerCoordinates, $detailZoom ? zoom + 2 : zoom));
 
   onMount(() => {
     mymap = L.map("mapid").setView([53.58, 9.99], zoom);
@@ -59,9 +56,7 @@
   });
 </script>
 
-<div class="veg-map">
-  <div id="mapid" />
-</div>
+<div id="mapid" />
 
 <style>
   #mapid {

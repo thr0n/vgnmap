@@ -10,6 +10,7 @@
   let zoom = 12;
 
   function toggleCity() {
+    // TODO extract city configuration
     if ($selectedCity === "Hamburg") {
       $selectedCity = "München";
       $selectedStoreLatLon = [48.1357845607709, 11.543135740571408];
@@ -45,7 +46,7 @@
         <h1>Vegan essen in...</h1>
           <h2 class="clickable" on:click={toggleCity}>{$selectedCity}</h2>
       </div>
-      <div class="restaurant-container">
+      <div class="restaurant-list">
         {#each restaurants.filter((r) => r.city === $selectedCity).sort((a, b) => a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0) as restaurant (restaurant.name)}
           <div
             on:mouseover={() => {handleRestaurantFocus(restaurant.position)}}
@@ -94,10 +95,6 @@
     cursor: pointer;
   }  
 
-  .header-section {
-    height: 20vh;
-  }
-  
   .header-container {
     margin: 0 auto;
     width: 66%;
@@ -105,8 +102,8 @@
     margin-bottom: 24px;
   }
   
-  .restaurant-container {
+  .restaurant-list {
     overflow-y: scroll;
-    height: 80vh;
+    height: 79vh;
   }
 </style>
