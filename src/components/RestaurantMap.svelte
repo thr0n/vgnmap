@@ -13,7 +13,7 @@
   export let zoom: number;
 
   const accessToken = process.env.API_KEY;
-  
+
   let mymap = null;
 
   const bindPopup = (marker, createFn) => {
@@ -23,9 +23,11 @@
       popupComponent = createFn(container);
       return container;
     });
-  }
+  };
 
-  afterUpdate(() => mymap.setView(centerCoordinates, $detailZoom ? zoom + 2 : zoom));
+  afterUpdate(() =>
+    mymap.setView(centerCoordinates, $detailZoom ? zoom + 2 : zoom)
+  );
 
   onMount(() => {
     mymap = L.map("mapid").setView([53.58, 9.99], zoom);

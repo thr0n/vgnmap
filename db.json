@@ -98,5 +98,19 @@
         "website": "https://www.theveganeagle.com/",
         "veganOnly": true,
         "city": "Hamburg"
+      },
+      {
+        "name": "Bergmann Cury",
+        "position": [52.48986235924269, 13.394329652918708],
+        "website": "http://www.bergmann-curry.de/",
+        "veganOnly": false,
+        "city": "Berlin"
+      },
+      {
+        "name": "Feel Seoul Good",
+        "position": [52.5371685221749, 13.420143936001793],
+        "website": "http://feelseoulgood.de/",
+        "veganOnly": true,
+        "city": "Berlin"
       }]
 }

@@ -1,33 +1,24 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import axios from "axios";
-  import Map from "./components/Map.svelte";
-  import Restaurant from "./components/Restaurant.svelte";
   import type { RestaurantPosition, RestaurantProps } from "./types/Restaurant";
-  import { detailZoom, selectedCity, selectedStoreLatLon } from "./stores/selection";
+  import type { CitySelectorProps } from "./types/CitySelector";
+  import RestaurantMap from "./components/RestaurantMap.svelte";
+  import Restaurant from "./components/Restaurant.svelte";
+  import CitySelector from "./components/CitySelector.svelte";
+  import {
+    detailZoom,
+    selectedCity,
+    selectedStoreLatLon,
+  } from "./stores/selection";
 
   let restaurants: RestaurantProps[] = [];
   let zoom = 12;
 
-  function toggleCity() {
-    // TODO extract city configuration
-    if ($selectedCity === "Hamburg") {
-      $selectedCity = "München";
-      $selectedStoreLatLon = [48.1357845607709, 11.543135740571408];
-      $detailZoom = false
-      zoom = 13;
-    } else {
-      $selectedCity = "Hamburg";
-      $selectedStoreLatLon = [53.58, 9.99];
-      $detailZoom = false
-      zoom = 12;
-    }
-  }
-
   const handleRestaurantFocus = (position: RestaurantPosition) => {
     $selectedStoreLatLon = position;
     $detailZoom = true;
-  }
+  };
 
   $selectedStoreLatLon = [53.58, 9.99];
 
@@ -37,6 +28,21 @@
     );
     restaurants = response.data;
   });
+
+  const countRestaurantsGroupedByCity = (restaurants): CitySelectorProps[] => {
+    let resultMap = new Map();
+    restaurants.map((r) => {
+      const { city } = r;
+      resultMap.set(
+        city,
+        resultMap.get(city) === undefined ? 1 : resultMap.get(city) + 1
+      );
+    });
+    return Array.from(resultMap, ([city, restaurantCount]) => ({
+      city,
+      restaurantCount,
+    })).sort((a, b) => a.restaurantCount < b.restaurantCount ? 1 : a.restaurantCount > b.restaurantCount ? -1 : 0);
+  };
 </script>
 
 <main>
@@ -44,14 +50,24 @@
     <div class="restaurant-section">
       <div class="header-container">
         <h1>Vegan essen in...</h1>
-          <h2 class="clickable" on:click={toggleCity}>{$selectedCity}</h2>
+        <CitySelector
+          restaurantCount={countRestaurantsGroupedByCity(restaurants)}
+        />
       </div>
       <div class="restaurant-list">
-        {#each restaurants.filter((r) => r.city === $selectedCity).sort((a, b) => a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0) as restaurant (restaurant.name)}
+        {#each restaurants
+          .filter((r) => r.city === $selectedCity)
+          .sort( (a, b) => (a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0) ) as restaurant (restaurant.name)}
           <div
-            on:mouseover={() => {handleRestaurantFocus(restaurant.position)}}
-            on:focus={() => {handleRestaurantFocus(restaurant.position)}}
-            on:mouseenter={() => {handleRestaurantFocus(restaurant.position)}}
+            on:mouseover={() => {
+              handleRestaurantFocus(restaurant.position);
+            }}
+            on:focus={() => {
+              handleRestaurantFocus(restaurant.position);
+            }}
+            on:mouseenter={() => {
+              handleRestaurantFocus(restaurant.position);
+            }}
           >
             <Restaurant {...restaurant} />
           </div>
@@ -59,7 +75,11 @@
       </div>
     </div>
     {#if restaurants.length > 0}
-      <Map {restaurants} centerCoordinates={$selectedStoreLatLon} {zoom} />
+      <RestaurantMap
+        {restaurants}
+        centerCoordinates={$selectedStoreLatLon}
+        {zoom}
+      />
     {/if}
   </div>
 </main>
@@ -93,15 +113,15 @@
 
   .clickable {
     cursor: pointer;
-  }  
+  }
 
   .header-container {
     margin: 0 auto;
     width: 66%;
-    border-bottom: 3px dotted #ff3e00; 
+    border-bottom: 3px dotted #ff3e00;
     margin-bottom: 24px;
   }
-  
+
   .restaurant-list {
     overflow-y: scroll;
     height: 79vh;
