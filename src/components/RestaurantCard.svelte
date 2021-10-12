@@ -20,6 +20,5 @@
   .restaurant-card {
     border-bottom: 3px dotted #eaeaea;
     margin: 0 20px 8px 20px;
-    min-height: 330px;
   }
 </style>

@@ -4,7 +4,7 @@
   import type { RestaurantPosition, RestaurantProps } from "./types/Restaurant";
   import type { CitySelectorProps } from "./types/CitySelector";
   import RestaurantMap from "./components/RestaurantMap.svelte";
-  import Restaurant from "./components/Restaurant.svelte";
+  import RestaurantCard from "./components/RestaurantCard.svelte";
   import CitySelector from "./components/CitySelector.svelte";
   import {
     detailZoom,
@@ -41,7 +41,13 @@
     return Array.from(resultMap, ([city, restaurantCount]) => ({
       city,
       restaurantCount,
-    })).sort((a, b) => a.restaurantCount < b.restaurantCount ? 1 : a.restaurantCount > b.restaurantCount ? -1 : 0);
+    })).sort((a, b) =>
+      a.restaurantCount < b.restaurantCount
+        ? 1
+        : a.restaurantCount > b.restaurantCount
+        ? -1
+        : 0
+    );
   };
 </script>
 
@@ -49,7 +55,7 @@
   <div class="app-container">
     <div class="restaurant-section">
       <div class="header-container">
-        <h1>Vegan essen in...</h1>
+        <h1>Vegan essen in:</h1>
         <CitySelector
           restaurantCount={countRestaurantsGroupedByCity(restaurants)}
         />
@@ -69,18 +75,20 @@
               handleRestaurantFocus(restaurant.position);
             }}
           >
-            <Restaurant {...restaurant} />
+            <RestaurantCard {...restaurant} />
           </div>
         {/each}
       </div>
     </div>
-    {#if restaurants.length > 0}
-      <RestaurantMap
-        {restaurants}
-        centerCoordinates={$selectedStoreLatLon}
-        {zoom}
-      />
-    {/if}
+    <div class="map-container">
+      {#if restaurants.length > 0}
+        <RestaurantMap
+          {restaurants}
+          centerCoordinates={$selectedStoreLatLon}
+          {zoom}
+        />
+      {/if}
+    </div>
   </div>
 </main>
 
@@ -88,7 +96,6 @@
   main {
     text-align: center;
     padding: 0em;
-    max-width: 240px;
     margin: 0 auto;
   }
 
@@ -99,31 +106,33 @@
     font-weight: 100;
   }
 
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
-    }
-  }
-
   .app-container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto 300px;
+    grid-gap: 10px;
     height: 100vh;
   }
 
-  .clickable {
-    cursor: pointer;
-  }
-
   .header-container {
-    margin: 0 auto;
-    width: 66%;
-    border-bottom: 3px dotted #ff3e00;
-    margin-bottom: 24px;
+    padding: 8px;
+    border-bottom: 3px #ff3e00 dotted;
+    margin: 0 20px 0 20px;
   }
 
-  .restaurant-list {
+  .restaurant-section {
     overflow-y: scroll;
-    height: 79vh;
+  }
+
+  @media (max-width: 860px) {
+    h1 {
+      font-size: 3em;
+    }
+  }
+
+  @media (min-width: 601px) {
+    .app-container {
+      grid-template-rows: none;
+      grid-template-columns: 3fr 2fr;
+    }
   }
 </style>

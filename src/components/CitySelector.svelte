@@ -48,6 +48,7 @@
 <style lang="scss">
   .city-selector {
     display: flex;
+    justify-content: center;
     padding: 0 16px 16px 16px;
   }
 

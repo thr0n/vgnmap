@@ -60,8 +60,8 @@
 
 <div id="mapid" />
 
-<style>
+<style langs="scss">
   #mapid {
-    min-height: 100vh;
+    min-height: 100%;
   }
 </style>
