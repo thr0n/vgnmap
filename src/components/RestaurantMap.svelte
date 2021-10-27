@@ -12,9 +12,7 @@
   export let centerCoordinates: RestaurantPosition;
   export let zoom: number;
 
-  const accessToken = process.env.API_KEY;
-
-  let mymap = null;
+  let map = null;
 
   const bindPopup = (marker, createFn) => {
     let popupComponent;
@@ -26,13 +24,13 @@
   };
 
   afterUpdate(() =>
-    mymap.setView(centerCoordinates, $detailZoom ? zoom + 2 : zoom)
+    map.setView(centerCoordinates, $detailZoom ? zoom + 2 : zoom)
   );
 
   onMount(() => {
-    mymap = L.map("mapid").setView([53.58, 9.99], zoom);
+    map = L.map("mapid").setView([53.58, 9.99], zoom);
     restaurants.map((r) => {
-      let marker = L.marker(r.position).addTo(mymap);
+      let marker = L.marker(r.position).addTo(map);
       bindPopup(marker, (container) => {
         let c = new AddressPopup({
           target: container,
@@ -43,18 +41,12 @@
         return c;
       });
     });
-    L.tileLayer(
-      "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
-      {
-        attribution:
-          'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        maxZoom: 18,
-        id: "mapbox/streets-v11",
-        tileSize: 512,
-        zoomOffset: -1,
-        accessToken,
-      }
-    ).addTo(mymap);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }).addTo(map);
+
+      L.control.scale({imperial: false, metric: true}).addTo(map);
   });
 </script>
 

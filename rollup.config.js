@@ -65,7 +65,6 @@ export default {
         production ? "production" : "development"
       ),
       "process.env.RESTAURANT_API_HOST": JSON.stringify(production ? '' : "http://localhost:3000/restaurants"),
-      "process.env.API_KEY": JSON.stringify(process.env.MAPBOX_API_KEY),
     }),
 
     // If you have external dependencies installed from

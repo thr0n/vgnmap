@@ -18,12 +18,12 @@
       $selectedCity = "München";
       $selectedStoreLatLon = [48.1357845607709, 11.543135740571408];
       $detailZoom = false;
-      zoom = 13;
+      zoom = 16;
     } else if (city === "Berlin") {
       $selectedCity = "Berlin";
       $selectedStoreLatLon = [52.50425369791297, 13.382155237634121];
       $detailZoom = false;
-      zoom = 13;
+      zoom = 14;
     } else {
       $selectedCity = "Hamburg";
       $selectedStoreLatLon = [53.58, 9.99];
