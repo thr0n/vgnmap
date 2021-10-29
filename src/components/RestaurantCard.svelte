@@ -7,18 +7,18 @@
   export let city: string;
 </script>
 
-<div class="restaurant-card">
+<div class="restaurant-card" id={name}>
   <h2>
     {name}
   </h2>
+  <img src="https://via.placeholder.com/200" alt={`${name} restaurant image`} />
   <p>
-    {website}
+    <a href={website} target="_blank">{website}</a>
   </p>
 </div>
 
 <style lang="scss">
   .restaurant-card {
-    border-bottom: 3px dotted #eaeaea;
-    margin: 0 20px 8px 20px;
+    margin: 20px 20px;
   }
 </style>

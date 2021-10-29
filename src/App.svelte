@@ -2,7 +2,6 @@
   import { onMount } from "svelte";
   import axios from "axios";
   import type { RestaurantPosition, RestaurantProps } from "./types/Restaurant";
-  import type { CitySelectorProps } from "./types/CitySelector";
   import RestaurantMap from "./components/RestaurantMap.svelte";
   import RestaurantCard from "./components/RestaurantCard.svelte";
   import CitySelector from "./components/CitySelector.svelte";
@@ -22,33 +21,18 @@
 
   $selectedStoreLatLon = [53.58, 9.99];
 
+  $: restaurantsToShow = restaurants
+    .filter((r) => r.city === $selectedCity)
+    .sort((a, b) =>
+      a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0
+    );
+
   onMount(async () => {
     const response = await axios.get<RestaurantProps[]>(
       process.env.RESTAURANT_API_HOST
     );
     restaurants = response.data;
   });
-
-  const countRestaurantsGroupedByCity = (restaurants): CitySelectorProps[] => {
-    let resultMap = new Map();
-    restaurants.map((r) => {
-      const { city } = r;
-      resultMap.set(
-        city,
-        resultMap.get(city) === undefined ? 1 : resultMap.get(city) + 1
-      );
-    });
-    return Array.from(resultMap, ([city, restaurantCount]) => ({
-      city,
-      restaurantCount,
-    })).sort((a, b) =>
-      a.restaurantCount < b.restaurantCount
-        ? 1
-        : a.restaurantCount > b.restaurantCount
-        ? -1
-        : 0
-    );
-  };
 </script>
 
 <main>
@@ -56,15 +40,12 @@
     <div class="restaurant-section">
       <div class="header-container">
         <h1>Vegan essen in:</h1>
-        <CitySelector
-          restaurantCount={countRestaurantsGroupedByCity(restaurants)}
-        />
+        <CitySelector {restaurants} />
       </div>
       <div class="restaurant-list">
-        {#each restaurants
-          .filter((r) => r.city === $selectedCity)
-          .sort( (a, b) => (a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0) ) as restaurant (restaurant.name)}
+        {#each restaurantsToShow as restaurant (restaurant.name)}
           <div
+            class="restaurant-list-item"
             on:mouseover={() => {
               handleRestaurantFocus(restaurant.position);
             }}
@@ -121,6 +102,12 @@
 
   .restaurant-section {
     overflow-y: scroll;
+  }
+
+  .restaurant-list {
+    &-item:not(:first-child) {
+      border-top: 3px dotted #eaeaea;
+    }
   }
 
   @media (max-width: 860px) {

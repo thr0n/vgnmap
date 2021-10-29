@@ -5,8 +5,9 @@
     selectedStoreLatLon,
   } from "../stores/selection";
   import type { CitySelectorProps } from "../types/CitySelector";
+  import type { RestaurantProps } from "../types/Restaurant";
 
-  export let restaurantCount: CitySelectorProps[];
+  export let restaurants: RestaurantProps[];
 
   let zoom = 12;
 
@@ -31,10 +32,32 @@
       zoom = 12;
     }
   };
+
+  const countRestaurantsGroupedByCity = (restaurants): CitySelectorProps[] => {
+    let resultMap = new Map();
+    restaurants.map((r) => {
+      const { city } = r;
+      resultMap.set(
+        city,
+        resultMap.get(city) === undefined ? 1 : resultMap.get(city) + 1
+      );
+    });
+
+    return Array.from(resultMap, ([city, restaurantCount]) => ({
+      city,
+      restaurantCount,
+    })).sort((a, b) =>
+      a.restaurantCount < b.restaurantCount
+        ? 1
+        : a.restaurantCount > b.restaurantCount
+        ? -1
+        : 0
+    );
+  };
 </script>
 
 <div class="city-selector">
-  {#each restaurantCount as rc (rc.city)}
+  {#each countRestaurantsGroupedByCity(restaurants) as rc (rc.city)}
     <div
       class="city-button"
       class:city-button-active={$selectedCity === rc.city}
