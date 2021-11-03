@@ -1,9 +1,16 @@
 export type RestaurantPosition = [number, number];
 
-export interface RestaurantProps {
+export interface IRestaurant {
+  address: IAddress;
   name: string;
   position: RestaurantPosition;
-  veganOnly?: boolean;
-  website?: string;
+  restaurantType: string[];
+  website: string;
+}
+
+export interface IAddress {
   city: string;
+  country: string;
+  street: string;
+  zip: string;
 }

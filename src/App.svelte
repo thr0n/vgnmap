@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import axios from "axios";
-  import type { RestaurantPosition, RestaurantProps } from "./types/Restaurant";
+  import { getRestaurants } from "./services/ContentfulService";
+  import type { IRestaurant, RestaurantPosition } from "./types/Restaurant";
   import RestaurantMap from "./components/RestaurantMap.svelte";
   import RestaurantCard from "./components/RestaurantCard.svelte";
   import CitySelector from "./components/CitySelector.svelte";
@@ -11,7 +11,8 @@
     selectedStoreLatLon,
   } from "./stores/selection";
 
-  let restaurants: RestaurantProps[] = [];
+  let restaurants: IRestaurant[] = [];
+
   let zoom = 12;
 
   const handleRestaurantFocus = (position: RestaurantPosition) => {
@@ -22,16 +23,13 @@
   $selectedStoreLatLon = [53.58, 9.99];
 
   $: restaurantsToShow = restaurants
-    .filter((r) => r.city === $selectedCity)
+    .filter((r) => r.address.city === $selectedCity)
     .sort((a, b) =>
       a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0
     );
 
   onMount(async () => {
-    const response = await axios.get<RestaurantProps[]>(
-      process.env.RESTAURANT_API_HOST
-    );
-    restaurants = response.data;
+    restaurants = await getRestaurants();
   });
 </script>
 

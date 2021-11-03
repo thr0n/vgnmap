@@ -1,14 +1,10 @@
 <script lang="ts">
-  import type {
-    RestaurantPosition,
-    RestaurantProps,
-  } from "../types/Restaurant";
+  import type { IRestaurant, RestaurantPosition } from "../types/Restaurant";
   import { onMount, afterUpdate } from "svelte";
   import L from "leaflet";
-  import AddressPopup from "./AddressPopup.svelte";
   import { detailZoom } from "../stores/selection";
 
-  export let restaurants: RestaurantProps[];
+  export let restaurants: IRestaurant[];
   export let centerCoordinates: RestaurantPosition;
   export let zoom: number;
 

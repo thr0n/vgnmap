@@ -5,9 +5,9 @@
     selectedStoreLatLon,
   } from "../stores/selection";
   import type { CitySelectorProps } from "../types/CitySelector";
-  import type { RestaurantProps } from "../types/Restaurant";
+  import type { IRestaurant } from "../types/Restaurant";
 
-  export let restaurants: RestaurantProps[];
+  export let restaurants: IRestaurant[];
 
   let zoom = 12;
 
@@ -36,7 +36,7 @@
   const countRestaurantsGroupedByCity = (restaurants): CitySelectorProps[] => {
     let resultMap = new Map();
     restaurants.map((r) => {
-      const { city } = r;
+      const { city } = r.address;
       resultMap.set(
         city,
         resultMap.get(city) === undefined ? 1 : resultMap.get(city) + 1
