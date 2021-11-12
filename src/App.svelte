@@ -5,25 +5,26 @@
   import RestaurantMap from "./components/RestaurantMap.svelte";
   import RestaurantCard from "./components/RestaurantCard.svelte";
   import CitySelector from "./components/CitySelector.svelte";
-  import {
-    detailZoom,
-    selectedCity,
-    selectedStoreLatLon,
-  } from "./stores/selection";
 
   let restaurants: IRestaurant[] = [];
-
   let zoom = 12;
+  let detailZoom = false;
+  let selectedStoreLatLon: RestaurantPosition = [53.58, 9.99];
+  let selectedCity = "Hamburg";
 
-  const handleRestaurantFocus = (position: RestaurantPosition) => {
-    $selectedStoreLatLon = position;
-    $detailZoom = true;
+  const onRestaurantClick = (position: RestaurantPosition) => {
+    selectedStoreLatLon = position;
+    detailZoom = true;
   };
 
-  $selectedStoreLatLon = [53.58, 9.99];
+  const onCitySelection = (location: RestaurantPosition, city: string) => {
+    selectedCity = city
+    selectedStoreLatLon = location;
+    detailZoom = false;
+  };
 
   $: restaurantsToShow = restaurants
-    .filter((r) => r.address.city === $selectedCity)
+    .filter((r) => r.address.city === selectedCity)
     .sort((a, b) =>
       a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0
     );
@@ -38,20 +39,20 @@
     <div class="restaurant-section">
       <div class="header-container">
         <h1>Vegan essen in:</h1>
-        <CitySelector {restaurants} />
+        <CitySelector {restaurants} {selectedCity} {onCitySelection} />
       </div>
       <div class="restaurant-list">
         {#each restaurantsToShow as restaurant (restaurant.name)}
           <div
             class="restaurant-list-item"
             on:mouseover={() => {
-              handleRestaurantFocus(restaurant.position);
+              onRestaurantClick(restaurant.position);
             }}
             on:focus={() => {
-              handleRestaurantFocus(restaurant.position);
+              onRestaurantClick(restaurant.position);
             }}
             on:mouseenter={() => {
-              handleRestaurantFocus(restaurant.position);
+              onRestaurantClick(restaurant.position);
             }}
           >
             <RestaurantCard {...restaurant} />
@@ -63,8 +64,10 @@
       {#if restaurants.length > 0}
         <RestaurantMap
           {restaurants}
-          centerCoordinates={$selectedStoreLatLon}
+          centerCoordinates={selectedStoreLatLon}
           {zoom}
+          {detailZoom}
+          onMarkerClick={onRestaurantClick}
         />
       {/if}
     </div>

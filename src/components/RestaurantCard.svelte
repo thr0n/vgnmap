@@ -1,10 +1,11 @@
 <script lang="ts">
-  import type { IAddress } from "../types/Restaurant";
+  import type { IAddress, RestaurantPosition } from "../types/Restaurant";
 
   export let name: string;
   export let website: string = null;
   export let address: IAddress;
   export let restaurantType: string[];
+  export let position: RestaurantPosition; // TODO unused!
 </script>
 
 <div class="restaurant-card" id={name}>
@@ -19,5 +20,9 @@
 <style lang="scss">
   .restaurant-card {
     margin: 20px 20px;
+
+    img {
+      height: 200px;
+    }
   }
 </style>

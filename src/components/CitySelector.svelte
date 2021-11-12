@@ -1,36 +1,27 @@
 <script lang="ts">
-  import {
-    detailZoom,
-    selectedCity,
-    selectedStoreLatLon,
-  } from "../stores/selection";
   import type { CitySelectorProps } from "../types/CitySelector";
   import type { IRestaurant } from "../types/Restaurant";
 
+  export let onCitySelection;
   export let restaurants: IRestaurant[];
-
-  let zoom = 12;
+  export let selectedCity: string;
+  let latLon;
 
   const handleCitySelection = (city: string) => {
-    console.log("Selected: " + city);
-    if ($selectedCity === city) return;
-    // TODO extrat city configuration
+    if (selectedCity === city) return;
+
+    // TODO extract city configuration
     if (city === "München") {
-      $selectedCity = "München";
-      $selectedStoreLatLon = [48.1357845607709, 11.543135740571408];
-      $detailZoom = false;
-      zoom = 16;
+      selectedCity = "München";
+      latLon = [48.1357845607709, 11.543135740571408]
     } else if (city === "Berlin") {
-      $selectedCity = "Berlin";
-      $selectedStoreLatLon = [52.50425369791297, 13.382155237634121];
-      $detailZoom = false;
-      zoom = 14;
+      selectedCity = "Berlin";
+      latLon = [52.50425369791297, 13.382155237634121]
     } else {
-      $selectedCity = "Hamburg";
-      $selectedStoreLatLon = [53.58, 9.99];
-      $detailZoom = false;
-      zoom = 12;
+      selectedCity = "Hamburg";
+      latLon = [53.58, 9.99]
     }
+    onCitySelection(latLon, selectedCity)
   };
 
   const countRestaurantsGroupedByCity = (restaurants): CitySelectorProps[] => {
@@ -60,7 +51,7 @@
   {#each countRestaurantsGroupedByCity(restaurants) as rc (rc.city)}
     <div
       class="city-button"
-      class:city-button-active={$selectedCity === rc.city}
+      class:city-button-active={selectedCity === rc.city}
       on:click={() => handleCitySelection(rc.city)}
     >
       {rc.city} ({rc.restaurantCount})
