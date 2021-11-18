@@ -10,9 +10,10 @@
 
 <div class="restaurant-card" id={name}>
   <h2>
-    {name} <span style={"font-size: 10px"}>{restaurantType}</span>
+    {name}
   </h2>
   <img src="https://via.placeholder.com/200" alt={`${name} restaurant image`} />
+  <div class="restaurant-card-type">{restaurantType}</div>
   <p>{address.street}, {address.zip} {address.city}</p>
   <a href={website} target="_blank">{website}</a>
 </div>
@@ -23,6 +24,11 @@
 
     img {
       height: 200px;
+    }
+
+    &-type {
+      color: green;
+      margin: 8px 0 4px 0;
     }
   }
 </style>
