@@ -11,6 +11,8 @@
   let detailZoom = false;
   let selectedStoreLatLon: RestaurantPosition = [53.58, 9.99];
   let selectedCity = "Hamburg";
+  let theme = "light";
+  $: themeLabel = theme === "light" ? "Lights off" : "Lights on";
 
   const onRestaurantClick = (position: RestaurantPosition) => {
     selectedStoreLatLon = position;
@@ -18,7 +20,7 @@
   };
 
   const onCitySelection = (location: RestaurantPosition, city: string) => {
-    selectedCity = city
+    selectedCity = city;
     selectedStoreLatLon = location;
     detailZoom = false;
   };
@@ -40,6 +42,15 @@
       <div class="header-container">
         <h1>Vegan essen in:</h1>
         <CitySelector {restaurants} {selectedCity} {onCitySelection} />
+        <button
+          on:click={() => { // TODO refactor
+            if (theme === "dark") {
+              theme = "light";
+            } else {
+              theme = "dark";
+            }
+          }}>{themeLabel}</button
+        >
       </div>
       <div class="restaurant-list">
         {#each restaurantsToShow as restaurant (restaurant.name)}
@@ -68,6 +79,7 @@
           {zoom}
           {detailZoom}
           onMarkerClick={onRestaurantClick}
+          {theme}
         />
       {/if}
     </div>
