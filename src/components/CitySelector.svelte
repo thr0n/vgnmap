@@ -60,20 +60,19 @@
   {/each}
 -->
   <div class="city-select-container">
-  <select
-    bind:value={selectedCity}
-    on:change={() => {
-      console.log(selectedCity)
-      handleCitySelection(selectedCity);
-    }}
+    <select
+      bind:value={selectedCity}
+      on:change={() => {
+        handleCitySelection(selectedCity);
+      }}
     >
-    {#each countRestaurantsGroupedByCity(restaurants) as option}
-      <option value={option.city}>
-        {option.city}
-      </option>
-    {/each}
-  </select>
-</div>
+      {#each countRestaurantsGroupedByCity(restaurants) as option}
+        <option value={option.city}>
+          {option.city}
+        </option>
+      {/each}
+    </select>
+  </div>
 </div>
 
 <style lang="scss">

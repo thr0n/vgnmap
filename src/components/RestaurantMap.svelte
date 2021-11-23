@@ -22,7 +22,6 @@
   let map = null;
 
   afterUpdate(() => {
-    console.log("updated");
     map.setView(centerCoordinates, detailZoom ? zoom + 2 : zoom);
     if (theme === "dark") {
       map.removeLayer(baselayers.light);
@@ -40,7 +39,7 @@
         .addTo(map)
         .on("click", () => {
           document.getElementById(r.name).scrollIntoView();
-          onMarkerClick(r);
+          onMarkerClick(r.position);
         });
     });
 

@@ -13,7 +13,7 @@ export async function getRestaurants(): Promise<IRestaurant[]> {
   });
 
   return result.items.map((i) => {
-    const { name, position, restaurantType, website } = i.fields;
+    const { name, position, restaurantType, website, menu } = i.fields;
     const { city, country, street, zip } = i.fields.address.fields;
     return {
       address: {
@@ -26,6 +26,7 @@ export async function getRestaurants(): Promise<IRestaurant[]> {
       position: [position.lat, position.lon], // TODO use object
       restaurantType,
       website,
+      menu,
     };
   });
 }

@@ -4,6 +4,7 @@ export interface ContentfulRestaurant {
   position: { lon: number; lat: number };
   restaurantType: string[];
   website: string;
+  menu: string[];
 }
 
 export interface ContentfulAddress {

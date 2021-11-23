@@ -6,6 +6,7 @@ export interface IRestaurant {
   position: RestaurantPosition;
   restaurantType: string[];
   website: string;
+  menu: string[];
 }
 
 export interface IAddress {

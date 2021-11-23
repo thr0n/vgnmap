@@ -42,8 +42,29 @@
       <div class="header-container">
         <h1>Vegan essen in:</h1>
         <CitySelector {restaurants} {selectedCity} {onCitySelection} />
+      </div>
+      <div class="restaurant-list">
+        {#each restaurantsToShow as restaurant (restaurant.name)}
+          <div
+            class="restaurant-list-item"
+            on:click={() => {
+              onRestaurantClick(restaurant.position);
+            }}
+          >
+            <RestaurantCard
+              address={restaurant.address}
+              name={restaurant.name}
+              restaurantType={restaurant.restaurantType[0]}
+              menu={restaurant.menu}
+              website={restaurant.website}
+            />
+          </div>
+        {/each}
+      </div>
+      <!-- TODO add dark mode restauant-section
         <button
-          on:click={() => { // TODO refactor
+          on:click={() => {
+            // TODO refactor
             if (theme === "dark") {
               theme = "light";
             } else {
@@ -51,25 +72,7 @@
             }
           }}>{themeLabel}</button
         >
-      </div>
-      <div class="restaurant-list">
-        {#each restaurantsToShow as restaurant (restaurant.name)}
-          <div
-            class="restaurant-list-item"
-            on:mouseover={() => {
-              onRestaurantClick(restaurant.position);
-            }}
-            on:focus={() => {
-              onRestaurantClick(restaurant.position);
-            }}
-            on:mouseenter={() => {
-              onRestaurantClick(restaurant.position);
-            }}
-          >
-            <RestaurantCard {...restaurant} />
-          </div>
-        {/each}
-      </div>
+        -->
     </div>
     <div class="map-container">
       {#if restaurants.length > 0}
@@ -98,6 +101,7 @@
     text-transform: uppercase;
     font-size: 4em;
     font-weight: 100;
+    margin-bottom: 8px;
   }
 
   .app-container {
@@ -108,7 +112,7 @@
   }
 
   .header-container {
-    padding: 8px;
+    padding: 8px 8px 12px 8px;
     border-bottom: 3px #ff3e00 dotted;
     margin: 0 20px 0 20px;
   }
@@ -121,11 +125,20 @@
     &-item:not(:first-child) {
       border-top: 3px dotted #eaeaea;
     }
+    &-item {
+      cursor: pointer;
+    }
   }
 
-  @media (max-width: 860px) {
+  @media (max-width: 868px) {
     h1 {
       font-size: 3em;
+    }
+  }
+
+  @media (max-width: 402px) {
+    h1 {
+      font-size: 2em;
     }
   }
 
@@ -133,6 +146,12 @@
     .app-container {
       grid-template-rows: none;
       grid-template-columns: 3fr 2fr;
+    }
+  }
+
+  @media (min-width: 601px) and (max-width: 681px) {
+    h1 {
+      font-size: 2em;
     }
   }
 </style>
