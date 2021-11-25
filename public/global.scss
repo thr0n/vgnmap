@@ -1,8 +1,38 @@
+$primary-color: #ff3e00;
+$primary-color-dark: #907ad6;
+
 html,
 body {
   position: relative;
   width: 100%;
   height: 100%;  
+}
+
+.dark-mode {
+  background-color: #121212;
+  color: darkgray;
+
+  a {
+    color: $primary-color-dark;
+    &:visited {
+      color: $primary-color-dark;
+    }
+  }
+}
+
+.leaflet-control-attribution {
+  a {
+    color: rgb(0, 80, 160);
+    &:visited {
+    color: rgb(0, 80, 160);
+    }
+  }
+}
+
+.leaflet-control-zoom {
+  a {
+    color: #121212;
+  }
 }
 
 body {
@@ -11,6 +41,11 @@ body {
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+h2 {
+  margin-bottom: 8px;
+  font-weight: 400;
 }
 
 a {
@@ -42,6 +77,7 @@ textarea {
   box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 2px;
+  background-color: #f4f4f4;
 }
 
 input:disabled {

@@ -5,13 +5,14 @@
   import RestaurantMap from "./components/RestaurantMap.svelte";
   import RestaurantCard from "./components/RestaurantCard.svelte";
   import CitySelector from "./components/CitySelector.svelte";
+  import "../public/global.scss";
 
   let restaurants: IRestaurant[] = [];
   let zoom = 12;
   let detailZoom = false;
   let selectedStoreLatLon: RestaurantPosition = [53.58, 9.99];
   let selectedCity = "Hamburg";
-  let theme = "light";
+  let theme = "dark";
   $: themeLabel = theme === "light" ? "Lights off" : "Lights on";
 
   const onRestaurantClick = (position: RestaurantPosition) => {
@@ -33,15 +34,26 @@
 
   onMount(async () => {
     restaurants = await getRestaurants();
+    if (theme === "dark") {
+      document.body.classList.add("dark-mode");
+    }
   });
 </script>
 
 <main>
   <div class="app-container">
-    <div class="restaurant-section">
-      <div class="header-container">
-        <h1>Vegan essen in:</h1>
-        <CitySelector {restaurants} {selectedCity} {onCitySelection} />
+    <div
+      class="restaurant-section"
+      class:restaurant-section-dark={theme === "dark"}
+    >
+      <div
+        class="header-container"
+        class:header-container-dark={theme === "dark"}
+      >
+        <h1 class:darkMode={theme === "dark"}>Vegan essen in:</h1>
+        <div class="header-controls">
+          <CitySelector {restaurants} {selectedCity} {onCitySelection} />
+        </div>
       </div>
       <div class="restaurant-list">
         {#each restaurantsToShow as restaurant (restaurant.name)}
@@ -61,18 +73,18 @@
           </div>
         {/each}
       </div>
-      <!-- TODO add dark mode restauant-section
-        <button
-          on:click={() => {
-            // TODO refactor
-            if (theme === "dark") {
-              theme = "light";
-            } else {
-              theme = "dark";
-            }
-          }}>{themeLabel}</button
-        >
-        -->
+      <button
+        on:click={() => {
+          // TODO refactor
+          if (theme === "dark") {
+            theme = "light";
+          } else {
+            theme = "dark";
+          }
+          document.body.classList.toggle("dark-mode");
+        }}
+        >{themeLabel}
+      </button>
     </div>
     <div class="map-container">
       {#if restaurants.length > 0}
@@ -90,6 +102,8 @@
 </main>
 
 <style lang="scss">
+  @import "../public/global.scss";
+
   main {
     text-align: center;
     padding: 0em;
@@ -97,24 +111,30 @@
   }
 
   h1 {
-    color: #ff3e00;
+    color: $primary-color;
     text-transform: uppercase;
     font-size: 4em;
     font-weight: 100;
     margin-bottom: 8px;
   }
 
+  .darkMode {
+    color: $primary-color-dark;
+  }
+
   .app-container {
     display: grid;
     grid-template-rows: auto 300px;
-    grid-gap: 10px;
     height: 100vh;
   }
 
   .header-container {
     padding: 8px 8px 12px 8px;
-    border-bottom: 3px #ff3e00 dotted;
-    margin: 0 20px 0 20px;
+    border-bottom: 3px $primary-color dotted;
+    margin: 0 20px;
+    &-dark {
+      border-color: $primary-color-dark;
+    }
   }
 
   .restaurant-section {
@@ -123,10 +143,11 @@
 
   .restaurant-list {
     &-item:not(:first-child) {
-      border-top: 3px dotted #eaeaea;
+      border-top: 3px dotted darkgray;
     }
     &-item {
       cursor: pointer;
+      margin: 0 20px;
     }
   }
 

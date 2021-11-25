@@ -19,8 +19,11 @@
       <RestaurantTag label={entry} type="food" />
     {/each}
   </div>
-  <p>{address.street}, {address.zip} {address.city}</p>
-  <a href={website} target="_blank">{website}</a>
+  <div class="restaurant-address">
+    <span>{address.street}</span>
+    <span>{address.zip} {address.city}</span>
+  </div>
+  <a class="restaurant-link" href={website} target="_blank">{website}</a>
 </div>
 
 <style lang="scss">
@@ -31,10 +34,22 @@
       height: 200px;
     }
   }
+
   .restaurant-tags {
     margin: 4px 0;
     display: flex;
     justify-content: center;
     column-gap: 2px;
+  }
+
+  .restaurant-address {
+    display: grid;
+    padding: 8px;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 4px;
+  }
+
+  .restaurant-link {
+    font-size: 14px;
   }
 </style>

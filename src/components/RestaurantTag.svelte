@@ -11,6 +11,7 @@
   .restaurant-tag {
     display: inline-block;
     color: white;
+    margin: 0 2px;
     padding: 4px 8px;
     border-radius: 3px;
     font-size: 12px;
@@ -26,6 +27,12 @@
 
     &-food {
       background-color: #533745;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .restaurant-tag {
+      margin: 0;
     }
   }
 </style>

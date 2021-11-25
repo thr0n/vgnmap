@@ -8,7 +8,7 @@ import css from "rollup-plugin-css-only";
 import replace from "@rollup/plugin-replace";
 import { config } from "dotenv";
 import autoPreprocess from 'svelte-preprocess';
-
+import scss from "rollup-plugin-scss";
 
 config();
 
@@ -57,6 +57,7 @@ export default {
     }),
     // we'll extract any component CSS out into
     // a separate file - better for performance
+    scss(),
     css({ output: "bundle.css" }),
 
     replace({

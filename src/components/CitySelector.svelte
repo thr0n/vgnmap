@@ -76,11 +76,6 @@
 </div>
 
 <style lang="scss">
-  .city-selector {
-    select {
-    }
-  }
-
   .city-button {
     margin-right: 16px;
     background-color: lightsalmon;
