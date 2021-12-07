@@ -73,7 +73,8 @@
           </div>
         {/each}
       </div>
-      <button
+      <span
+        class="theme-toggle"
         on:click={() => {
           // TODO refactor
           if (theme === "dark") {
@@ -84,7 +85,7 @@
           document.body.classList.toggle("dark-mode");
         }}
         >{themeLabel}
-      </button>
+      </span>
     </div>
     <div class="map-container">
       {#if restaurants.length > 0}
@@ -149,6 +150,12 @@
       cursor: pointer;
       margin: 0 20px;
     }
+  }
+
+  .theme-toggle {
+    font-size: 10px;
+    padding-bottom: 16px;
+    cursor: pointer;
   }
 
   @media (max-width: 868px) {

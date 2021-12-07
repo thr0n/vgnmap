@@ -10,26 +10,24 @@
   export let detailZoom;
   export let theme;
 
-  var baselayers = {
-    dark: L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    ),
-    light: L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-    ),
-  };
-
   let map = null;
+
+  const setTileLayer = () => {
+    L.tileLayer(
+      theme === "dark"
+        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      }
+    ).addTo(map);
+  };
 
   afterUpdate(() => {
     map.setView(centerCoordinates, detailZoom ? zoom + 2 : zoom);
-    if (theme === "dark") {
-      map.removeLayer(baselayers.light);
-      map.addLayer(baselayers.dark);
-    } else {
-      map.removeLayer(baselayers.dark);
-      map.addLayer(baselayers.light);
-    }
+    setTileLayer();
   });
 
   onMount(() => {
@@ -42,18 +40,7 @@
           onMarkerClick(r.position);
         });
     });
-
-    L.tileLayer(
-      theme === "dark"
-        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      }
-    ).addTo(map);
-
+    setTileLayer();
     L.control.scale({ imperial: false, metric: true }).addTo(map);
   });
 </script>
