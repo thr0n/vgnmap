@@ -12,7 +12,7 @@
   let detailZoom = false;
   let selectedStoreLatLon: RestaurantPosition = [53.58, 9.99];
   let selectedCity = "Hamburg";
-  let theme = "dark";
+  let theme = "light";
   $: themeLabel = theme === "light" ? "Lights off" : "Lights on";
 
   const onRestaurantClick = (position: RestaurantPosition) => {
