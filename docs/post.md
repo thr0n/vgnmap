@@ -1,4 +1,4 @@
-# Find a vegan restaurant near you - With the help of Svelte!
+# Find a vegan restaurant near you - With the help of Svelte! 🌱
 
 Trying out Svelte was on my bucket list of months or maybe even for years.
 When I was thinking about vegan restaurants in my hometown I finally found 
@@ -13,7 +13,7 @@ To store and provide the data about the restaurants, I use the content managemen
 In my current client project, I already work with another CMS, but I find Contentful very suitable for managing the restaurants.
 In particular, the Google Maps function integrated into Contentful was very helpful.
 With it, I can search for a restaurant and save the coordinates determined by Google Maps in the CMS.
-With a GET request, I can then retrieve the coordinates together with other restaurant data and use them in the frontend.
+With a GET request, I can then retrieve the coordinates together with other restaurant data and use them in the frontend 🗺
 
 I created the Svelte project with degit according to these [instructions](https://svelte.dev/blog/svelte-for-new-developers).
 In addition, I use TypeScript and [SCSS](https://linguinecode.com/post/add-sass-svelte-js), which can be configured subsequently with little effort.
