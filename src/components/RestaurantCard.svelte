@@ -23,7 +23,9 @@
     <span>{address.street}</span>
     <span>{address.zip} {address.city}</span>
   </div>
+  {#if website}
   <a class="restaurant-link" href={website} target="_blank">{website}</a>
+  {/if}
 </div>
 
 <style lang="scss">

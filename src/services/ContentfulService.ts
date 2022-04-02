@@ -1,4 +1,4 @@
-import contentful from "contentful";
+import contentful, { EntryCollection } from "contentful";
 import type { ContentfulRestaurant } from "../types/Contentful";
 import type { IRestaurant } from "../types/Restaurant";
 
@@ -8,7 +8,7 @@ const client = contentful.createClient({
 });
 
 export async function getRestaurants(): Promise<IRestaurant[]> {
-  const result = await client.getEntries<ContentfulRestaurant>({
+  const result: EntryCollection<ContentfulRestaurant> = await client.getEntries<ContentfulRestaurant>({
     content_type: "restaurant",
   });
 
