@@ -1,54 +1,56 @@
 <script lang="ts">
-  import type { IRestaurant, RestaurantPosition } from "../types/Restaurant";
-  import { onMount, afterUpdate } from "svelte";
-  import L from "leaflet";
+  import * as L from 'leaflet';
+  // If you're playing with this in the Svelte REPL, import the CSS using the
+  // syntax in svelte:head instead. For normal development, this is better.
+  import 'leaflet/dist/leaflet.css';
+  import { afterUpdate } from 'svelte';
+  import type { IRestaurant, RestaurantPosition } from '../types/Restaurant';
 
   export let restaurants: IRestaurant[];
-  export let centerCoordinates: RestaurantPosition;
-  export let zoom: number;
-  export let onMarkerClick;
-  export let detailZoom;
-  export let theme;
+  export let onMarkerClick: (r: IRestaurant) => void;
+  export let coordinates: RestaurantPosition;
 
-  let map = null;
-
-  const setTileLayer = () => {
-    L.tileLayer(
-      theme === "dark"
-        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      }
-    ).addTo(map);
-  };
+  let map;
 
   afterUpdate(() => {
-    map.setView(centerCoordinates, detailZoom ? zoom + 2 : zoom);
-    setTileLayer();
+    if (coordinates != null) {
+      map.setView(coordinates, 17);
+    } else {
+      map.setView([53.58, 9.99], 12);
+    }
   });
 
-  onMount(() => {
-    map = L.map("mapid").setView([53.58, 9.99], zoom);
+  const createMap = (container) => {
+    let m = L.map(container).setView([53.58, 9.99], 12);
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      {
+        attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,
+            &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
+        subdomains: 'abcd',
+        maxZoom: 14
+      }
+    ).addTo(m);
+
     restaurants.map((r) => {
       let marker = L.marker(r.position)
-        .addTo(map)
-        .on("click", () => {
-          document.getElementById(r.name).scrollIntoView();
-          onMarkerClick(r.position);
+        .addTo(m)
+        .on('click', () => {
+          onMarkerClick(r);
         });
     });
-    setTileLayer();
-    L.control.scale({ imperial: false, metric: true }).addTo(map);
-  });
+
+    return m;
+  };
+
+  const mapAction = (container) => {
+    map = createMap(container);
+    return {
+      destroy: () => {
+        map.remove();
+      }
+    };
+  };
 </script>
 
-<div id="mapid" />
-
-<style lang="scss">
-  #mapid {
-    min-height: 100%;
-  }
-</style>
+<div style="height:100%;z-index:0;" use:mapAction />

@@ -1,16 +1,17 @@
-import contentful, { EntryCollection } from "contentful";
-import type { ContentfulRestaurant } from "../types/Contentful";
-import type { IRestaurant } from "../types/Restaurant";
+import contentful, { EntryCollection } from 'contentful';
+import type { ContentfulRestaurant } from '../types/Contentful';
+import type { IRestaurant } from '../types/Restaurant';
 
 const client = contentful.createClient({
   space: process.env.CONTENTFUL_SPACE_ID,
-  accessToken: process.env.CONTENTFUL_TOKEN,
+  accessToken: process.env.CONTENTFUL_TOKEN
 });
 
 export async function getRestaurants(): Promise<IRestaurant[]> {
-  const result: EntryCollection<ContentfulRestaurant> = await client.getEntries<ContentfulRestaurant>({
-    content_type: "restaurant",
-  });
+  const result: EntryCollection<ContentfulRestaurant> =
+    await client.getEntries<ContentfulRestaurant>({
+      content_type: 'restaurant'
+    });
 
   return result.items.map((i) => {
     const { name, position, restaurantType, website, menu } = i.fields;
@@ -20,13 +21,13 @@ export async function getRestaurants(): Promise<IRestaurant[]> {
         city,
         country,
         street,
-        zip,
+        zip
       },
       name,
       position: [position.lat, position.lon], // TODO use object
       restaurantType,
       website,
-      menu,
+      menu
     };
   });
 }

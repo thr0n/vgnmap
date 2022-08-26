@@ -15,3 +15,5 @@ export interface IAddress {
   street: string;
   zip: string;
 }
+
+export type RestaurantTypeLabel = 'omnivore' | 'vegetarian' | 'vegan';

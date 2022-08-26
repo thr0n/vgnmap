@@ -1,185 +1,137 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { getRestaurants } from "./services/ContentfulService";
-  import type { IRestaurant, RestaurantPosition } from "./types/Restaurant";
-  import RestaurantMap from "./components/RestaurantMap.svelte";
-  import RestaurantCard from "./components/RestaurantCard.svelte";
-  import CitySelector from "./components/CitySelector.svelte";
-  import "../public/global.scss";
+  import { onMount } from 'svelte';
+  import type { IRestaurant, RestaurantPosition } from './types/Restaurant';
+  import { getRestaurants } from './services/ContentfulService';
+  import ArrowRight from './icons/ArrowRight.svelte';
+  import Close from './icons/Close.svelte';
+  import RestaurantCard from './components/RestaurantCard.svelte';
+  import RestaurantMap from './components/RestaurantMap.svelte';
 
   let restaurants: IRestaurant[] = [];
-  let zoom = 12;
-  let detailZoom = false;
-  let selectedStoreLatLon: RestaurantPosition = [53.58, 9.99];
-  let selectedCity = "Hamburg";
-  let theme = "light";
-  $: themeLabel = theme === "light" ? "Lights off" : "Lights on";
-
-  const onRestaurantClick = (position: RestaurantPosition) => {
-    selectedStoreLatLon = position;
-    detailZoom = true;
-  };
-
-  const onCitySelection = (location: RestaurantPosition, city: string) => {
-    selectedCity = city;
-    selectedStoreLatLon = location;
-    detailZoom = false;
-  };
-
-  $: restaurantsToShow = restaurants
-    .filter((r) => r.address.city === selectedCity)
-    .sort((a, b) =>
-      a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0
-    );
+  let selected: IRestaurant = null;
+  let menuOpen: boolean = !false;
 
   onMount(async () => {
     restaurants = await getRestaurants();
-    if (theme === "dark") {
-      document.body.classList.add("dark-mode");
-    }
+    restaurants = restaurants.filter((r) => r.address.city === 'Hamburg');
   });
+
+  const onRestaurantClick = (r: IRestaurant) => {
+    selected = r;
+  };
+
+  const onNavClose = () => {
+    selected = null;
+    menuOpen = false;
+  };
+
+  const onBack = () => {
+    selected = null;
+  };
+
+  const onNavOpen = () => {
+    menuOpen = true;
+  };
+
+  const onMarkerClick = (restaurant: IRestaurant) => {
+    menuOpen = true;
+    selected = restaurant;
+  };
 </script>
 
-<main>
-  <div class="app-container">
-    <div
-      class="restaurant-section"
-      class:restaurant-section-dark={theme === "dark"}
-    >
-      <div
-        class="header-container"
-        class:header-container-dark={theme === "dark"}
-      >
-        <h1 class:darkMode={theme === "dark"}>Vegan essen in:</h1>
-        <div class="header-controls">
-          <CitySelector {restaurants} {selectedCity} {onCitySelection} />
-        </div>
+<main class="app-container">
+  <div class="sidenav" class:sidenav-closed={!menuOpen}>
+    {#if menuOpen}
+      <div on:click={onNavClose} class="sidenav-close-icon"><Close /></div>
+      <div class="sidenav-header">
+        <h1>Vegan Food</h1>
       </div>
-      <div class="restaurant-list">
-        {#each restaurantsToShow as restaurant (restaurant.name)}
-          <div
-            class="restaurant-list-item"
-            on:click={() => {
-              onRestaurantClick(restaurant.position);
-            }}
-          >
-            <RestaurantCard
-              address={restaurant.address}
-              name={restaurant.name}
-              restaurantType={restaurant.restaurantType[0]}
-              menu={restaurant.menu}
-              website={restaurant.website}
-            />
-          </div>
-        {/each}
-      </div>
-      <span
-        class="theme-toggle"
-        on:click={() => {
-          // TODO refactor
-          if (theme === "dark") {
-            theme = "light";
-          } else {
-            theme = "dark";
-          }
-          document.body.classList.toggle("dark-mode");
-        }}
-        >{themeLabel}
+    {:else}
+      <span on:click={onNavOpen}>
+        <ArrowRight />
       </span>
-    </div>
-    <div class="map-container">
-      {#if restaurants.length > 0}
-        <RestaurantMap
-          {restaurants}
-          centerCoordinates={selectedStoreLatLon}
-          {zoom}
-          {detailZoom}
-          onMarkerClick={onRestaurantClick}
-          {theme}
+    {/if}
+    {#if menuOpen}
+      {#if !selected}
+        <ul>
+          {#each restaurants as r}
+            <li style="cursor: pointer;" on:click={() => onRestaurantClick(r)}>
+              {r.name}
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <RestaurantCard
+          name={selected.name}
+          city={selected.address.city}
+          street={selected.address.street}
+          zip={selected.address.zip}
+          type={selected.restaurantType[0]}
+          website={selected.website}
+          menu={selected.menu}
+          {onBack}
         />
       {/if}
-    </div>
+    {/if}
+  </div>
+
+  <div class="map-container">
+    {#if restaurants.length > 0}
+      <RestaurantMap
+        {restaurants}
+        {onMarkerClick}
+        coordinates={selected != null ? selected.position : null}
+      />
+    {/if}
+    {#if selected !== null}
+      <div>
+        {JSON.stringify(selected)}
+      </div>
+    {/if}
   </div>
 </main>
 
 <style lang="scss">
-  @import "../public/global.scss";
-
   main {
     text-align: center;
-    padding: 0em;
-    margin: 0 auto;
+    // max-width: 240px;
   }
 
   h1 {
-    color: $primary-color;
+    color: green;
     text-transform: uppercase;
-    font-size: 4em;
     font-weight: 100;
-    margin-bottom: 8px;
+    margin: 12px;
   }
 
-  .darkMode {
-    color: $primary-color-dark;
+  .sidenav {
+    height: 100%;
+    width: 300px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    overflow-x: hidden;
+    transition: width 0.3s;
+
+    @media screen and (max-width: 480px) {
+      width: 80vw;
+      top: 40vh;
+    }
+
+    &-closed {
+      width: 40px;
+    }
+
+    &-close-icon {
+      text-align: right;
+      padding: 8px 8px 0 0;
+    }
   }
 
-  .app-container {
-    display: grid;
-    grid-template-rows: auto 300px;
+  .map-container {
     height: 100vh;
-  }
-
-  .header-container {
-    padding: 8px 8px 12px 8px;
-    border-bottom: 3px $primary-color dotted;
-    margin: 0 20px;
-    &-dark {
-      border-color: $primary-color-dark;
-    }
-  }
-
-  .restaurant-section {
-    overflow-y: scroll;
-  }
-
-  .restaurant-list {
-    &-item:not(:first-child) {
-      border-top: 3px dotted darkgray;
-    }
-    &-item {
-      cursor: pointer;
-      margin: 0 20px;
-    }
-  }
-
-  .theme-toggle {
-    font-size: 10px;
-    padding-bottom: 16px;
-    cursor: pointer;
-  }
-
-  @media (max-width: 868px) {
-    h1 {
-      font-size: 3em;
-    }
-  }
-
-  @media (max-width: 402px) {
-    h1 {
-      font-size: 2em;
-    }
-  }
-
-  @media (min-width: 601px) {
-    .app-container {
-      grid-template-rows: none;
-      grid-template-columns: 3fr 2fr;
-    }
-  }
-
-  @media (min-width: 601px) and (max-width: 681px) {
-    h1 {
-      font-size: 2em;
-    }
+    margin-left: 30px;
   }
 </style>

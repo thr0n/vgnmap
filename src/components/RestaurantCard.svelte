@@ -1,57 +1,27 @@
 <script lang="ts">
-  import type { IAddress } from "../types/Restaurant";
-  import RestaurantTag from "./RestaurantTag.svelte";
+  import RestaurantLabel from './RestaurantLabel.svelte';
 
-  export let name: string;
-  export let website: string = null;
-  export let address: IAddress;
-  export let restaurantType: string;
-  export let menu: string[] = [];
+  export let name;
+  export let city;
+  export let street;
+  export let zip;
+  export let type;
+  export let menu;
+  export let website;
+  export let onBack: () => void;
 </script>
 
-<div class="restaurant-card" id={name}>
-  <h2>
-    {name}
-  </h2>
-  <div class="restaurant-tags">
-    <RestaurantTag label={restaurantType} type={restaurantType} />
-    {#each menu as entry}
-      <RestaurantTag label={entry} type="food" />
-    {/each}
+<div>
+  <div class="restaurant-card-header">
+    <h2>{name}</h2>
+    <span on:click={onBack}> Back </span>
   </div>
-  <div class="restaurant-address">
-    <span>{address.street}</span>
-    <span>{address.zip} {address.city}</span>
-  </div>
+  <p><RestaurantLabel {type} /> {JSON.stringify(menu)}</p>
+  <div>{street}</div>
+  <div>{zip} {city}</div>
   {#if website}
-  <a class="restaurant-link" href={website} target="_blank">{website}</a>
+    <p>
+      <a href={website}>{website}</a>
+    </p>
   {/if}
 </div>
-
-<style lang="scss">
-  .restaurant-card {
-    margin: 20px 20px;
-
-    img {
-      height: 200px;
-    }
-  }
-
-  .restaurant-tags {
-    margin: 4px 0;
-    display: flex;
-    justify-content: center;
-    column-gap: 2px;
-  }
-
-  .restaurant-address {
-    display: grid;
-    padding: 8px;
-    grid-template-rows: 1fr 1fr;
-    row-gap: 4px;
-  }
-
-  .restaurant-link {
-    font-size: 14px;
-  }
-</style>
