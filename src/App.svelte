@@ -9,7 +9,7 @@
 
   let restaurants: IRestaurant[] = [];
   let selected: IRestaurant = null;
-  let menuOpen: boolean = !false;
+  let menuOpen: boolean = false;
 
   onMount(async () => {
     restaurants = await getRestaurants();
@@ -41,11 +41,9 @@
 
 <main class="app-container">
   <div class="sidenav" class:sidenav-closed={!menuOpen}>
+    <h1>Vegan Food</h1>
     {#if menuOpen}
       <div on:click={onNavClose} class="sidenav-close-icon"><Close /></div>
-      <div class="sidenav-header">
-        <h1>Vegan Food</h1>
-      </div>
     {:else}
       <span on:click={onNavOpen}>
         <ArrowRight />
@@ -62,6 +60,7 @@
         </ul>
       {:else}
         <RestaurantCard
+          {selected}
           name={selected.name}
           city={selected.address.city}
           street={selected.address.street}
@@ -101,10 +100,11 @@
     color: green;
     text-transform: uppercase;
     font-weight: 100;
-    margin: 12px;
+    margin: 4px;
   }
 
   .sidenav {
+    box-shadow: 4px 0px 4px -2px lightslategray;
     height: 100%;
     width: 300px;
     position: fixed;
@@ -113,25 +113,37 @@
     left: 0;
     background-color: #fff;
     overflow-x: hidden;
-    transition: width 0.3s;
-
-    @media screen and (max-width: 480px) {
-      width: 80vw;
-      top: 40vh;
+    transition: width 0.2s ease-in-out;
+    h1 {
+      transition: transform 0.1s ease-in-out;
     }
 
     &-closed {
-      width: 40px;
+      width: 48px;
+
+      @media screen and (max-width: 480px) {
+        height: 100px;
+      }
+      @media screen and (min-width: 481px) {
+        h1 {
+          transform: rotate(-90deg);
+          height: 200px;
+          width: 200px;
+        }
+      }
     }
 
-    &-close-icon {
-      text-align: right;
-      padding: 8px 8px 0 0;
+    @media screen and (max-width: 480px) {
+      width: 100vw;
     }
   }
 
   .map-container {
     height: 100vh;
     margin-left: 30px;
+
+    @media screen and (max-width: 480px) {
+      margin-left: 0;
+    }
   }
 </style>

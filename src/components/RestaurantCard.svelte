@@ -1,6 +1,10 @@
 <script lang="ts">
-  import RestaurantLabel from './RestaurantLabel.svelte';
+  import type { IRestaurant } from '../types/Restaurant';
 
+  import RestaurantLabel from './RestaurantLabel.svelte';
+  import RestaurantMap from './RestaurantMap.svelte';
+
+  export let selected: IRestaurant;
   export let name;
   export let city;
   export let street;
@@ -24,4 +28,21 @@
       <a href={website}>{website}</a>
     </p>
   {/if}
+  <div class="detail-map">
+    <RestaurantMap
+      restaurants={[selected]}
+      onMarkerClick={null}
+      coordinates={selected.position}
+    />
+  </div>
 </div>
+
+<style lang="scss">
+  .detail-map {
+    height: 200px;
+
+    @media screen and (min-width: 481px) {
+      visibility: hidden;
+    }
+  }
+</style>
