@@ -11,12 +11,20 @@
   export let coordinates: RestaurantPosition;
 
   let map;
+  let markers = new Array();
 
   afterUpdate(() => {
     if (coordinates != null) {
       map.setView(coordinates, 17);
+      const selectedMarker = markers.find((marker) => {
+        console.log(marker._latlng)
+        console.log(coordinates)
+        return marker._latlng.lat === coordinates[0] && marker._latlng.lng === coordinates[1]
+      })
+      selectedMarker.openPopup()
     } else {
       map.setView([53.58, 9.99], 12);
+      map.closePopup();
     }
   });
 
@@ -34,10 +42,12 @@
 
     restaurants.map((r) => {
       let marker = L.marker(r.position)
+        .bindPopup('<p>' + r.name + '</p>')
         .addTo(m)
         .on('click', () => {
           onMarkerClick(r);
         });
+      markers.push(marker)
     });
 
     return m;
