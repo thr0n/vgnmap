@@ -13,6 +13,14 @@
   let map;
   let markers = new Array();
 
+  const deriveMapCenter = (restaurants: IRestaurant[]) => {
+    if (restaurants.length > 1) {
+      const index = Math.floor(restaurants.length / 2)
+      return restaurants[index]
+    }
+    return restaurants[0]
+  }
+
   afterUpdate(() => {
     if (coordinates != null) {
       map.setView(coordinates, 17);
@@ -21,7 +29,8 @@
       })
       selectedMarker && selectedMarker.openPopup()
     } else {
-      map.setView([53.58, 9.99], 12);
+      const centralRestaurant = deriveMapCenter(restaurants)
+      map.setView(centralRestaurant.position, 12);
       map.closePopup();
     }
   });

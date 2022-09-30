@@ -13,8 +13,6 @@
   export let menu;
   export let website;
   export let onBack: () => void;
-
-  console.log(menu)
 </script>
 
 <div>
@@ -47,7 +45,7 @@
 
 <style lang="scss">
   .detail-map {
-    height: 200px;
+    height: 50vh;
 
     @media screen and (min-width: 481px) {
       visibility: hidden;

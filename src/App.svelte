@@ -6,6 +6,7 @@
   import Close from './icons/Close.svelte';
   import RestaurantCard from './components/RestaurantCard.svelte';
   import RestaurantMap from './components/RestaurantMap.svelte';
+  import RestaurantListItem from './components/RestaurantListItem.svelte'
 
   let restaurants: IRestaurant[] = [];
   let selected: IRestaurant = null;
@@ -32,8 +33,21 @@
   }
   
   onMount(async () => {
-    restaurants = await getRestaurants();
-    // restaurants = restaurants.filter((r) => r.address.city.toLowerCase() === selectedCity).sort(sortRestaurants)
+    const places: IRestaurant[] = await getRestaurants()
+    
+    const updated = places.map(p => {
+      if (p.address.city.includes('ü')) {
+        return {
+          ...p,
+          address: {
+            ...p.address,
+            city: p.address.city.replace(/\u00fc/g, 'ue')
+          }
+        }
+      }
+      return p
+    })
+    restaurants = updated.filter((r) => r.address.city.toLowerCase() === selectedCity)//.sort(sortRestaurants)
   })
 
   const onRestaurantClick = (r: IRestaurant) => {
@@ -72,13 +86,11 @@
     {/if}
     {#if menuOpen}
       {#if !selected}
-        <ul>
+        <div>
           {#each restaurants as r}
-            <li style="cursor: pointer;" on:click={() => onRestaurantClick(r)}>
-              {r.name}
-            </li>
+            <RestaurantListItem restaurant={r} onClick={() => onRestaurantClick(r)}/>
           {/each}
-        </ul>
+        </div>
       {:else}
         <RestaurantCard
           {selected}
@@ -140,18 +152,23 @@
       transition: transform 0.1s ease-in-out;
     }
 
+    &-close-icon {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      padding-right: 12px;
+    }
+
     &-closed {
       width: 48px;
       //width: 400px;
 
       @media screen and (max-width: 480px) {
-        height: 100px;
+        height: 48px;
       }
       @media screen and (min-width: 481px) {
         h1 {
           transform: rotate(-90deg) translate(-100%, 0);
-          //height: 100%;
-          width: 100%;
         }
       }
     }
