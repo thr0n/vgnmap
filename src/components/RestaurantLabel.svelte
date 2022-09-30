@@ -2,9 +2,6 @@
   import type { RestaurantTypeLabel } from '../types/Restaurant';
 
   export let type: RestaurantTypeLabel;
-
-  console.log(type);
-  console.log(type === 'omnivore');
 </script>
 
 <span class={`type-label type-label-${type}`}>
@@ -19,6 +16,8 @@
     padding: 4px 8px;
     border-radius: 3px;
     font-size: 12px;
+    background-color: #533745;
+
     &-omnivore {
       background-color: #ff3e00;
     }

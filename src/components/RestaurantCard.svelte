@@ -13,6 +13,8 @@
   export let menu;
   export let website;
   export let onBack: () => void;
+
+  console.log(menu)
 </script>
 
 <div>
@@ -20,7 +22,13 @@
     <h2>{name}</h2>
     <span on:click={onBack}> Back </span>
   </div>
-  <p><RestaurantLabel {type} /> {JSON.stringify(menu)}</p>
+  <p><RestaurantLabel {type}/>
+    {#if menu && menu.length > 0}
+    {#each menu as m}
+      <RestaurantLabel type={m} />
+    {/each}
+    {/if}
+  </p>
   <div>{street}</div>
   <div>{zip} {city}</div>
   {#if website}

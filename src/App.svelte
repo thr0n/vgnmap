@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { IRestaurant, RestaurantPosition } from './types/Restaurant';
+  import type { IRestaurant } from './types/Restaurant';
   import { getRestaurants } from './services/ContentfulService';
   import ArrowRight from './icons/ArrowRight.svelte';
   import Close from './icons/Close.svelte';
@@ -10,11 +10,31 @@
   let restaurants: IRestaurant[] = [];
   let selected: IRestaurant = null;
   let menuOpen: boolean = false;
+  let selectedCity: string
 
+  const urlParams = new URLSearchParams(window.location.search)
+  const city = urlParams.has('city')
+
+  if (city) {
+    selectedCity = urlParams.get('city')
+  } else {
+    selectedCity = 'hamburg'
+  }
+
+  const sortRestaurants = (a: IRestaurant, b: IRestaurant) => {
+    if (a.position[1] > b.position[1]) {
+        return 1
+     }
+     if (a. position[1] < b.position[1]) {
+      return -1
+     }
+     return 0
+  }
+  
   onMount(async () => {
     restaurants = await getRestaurants();
-    restaurants = restaurants.filter((r) => r.address.city === 'Hamburg');
-  });
+    // restaurants = restaurants.filter((r) => r.address.city.toLowerCase() === selectedCity).sort(sortRestaurants)
+  })
 
   const onRestaurantClick = (r: IRestaurant) => {
     selected = r;
@@ -37,11 +57,12 @@
     menuOpen = true;
     selected = restaurant;
   };
+
+  
 </script>
 
 <main class="app-container">
   <div class="sidenav" class:sidenav-closed={!menuOpen}>
-    <h1>Vegan Food</h1>
     {#if menuOpen}
       <div on:click={onNavClose} class="sidenav-close-icon"><Close /></div>
     {:else}
@@ -96,13 +117,6 @@
     // max-width: 240px;
   }
 
-  h1 {
-    color: green;
-    text-transform: uppercase;
-    font-weight: 100;
-    margin: 4px;
-  }
-
   .sidenav {
     box-shadow: 4px 0px 4px -2px lightslategray;
     height: 100%;
@@ -114,21 +128,30 @@
     background-color: #fff;
     overflow-x: hidden;
     transition: width 0.2s ease-in-out;
+    padding: 12px 4px 0 0;
+    display: grid;
+    grid-template-rows: 30px max-content;
+
     h1 {
+      color: green;
+      text-transform: uppercase;
+      font-weight: 100;
+      margin: 4px;
       transition: transform 0.1s ease-in-out;
     }
 
     &-closed {
       width: 48px;
+      //width: 400px;
 
       @media screen and (max-width: 480px) {
         height: 100px;
       }
       @media screen and (min-width: 481px) {
         h1 {
-          transform: rotate(-90deg);
-          height: 200px;
-          width: 200px;
+          transform: rotate(-90deg) translate(-100%, 0);
+          //height: 100%;
+          width: 100%;
         }
       }
     }
