@@ -1,41 +1,39 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { IRestaurant } from './types/Restaurant';
-  import { getRestaurants } from './services/ContentfulService';
-  import ArrowRight from './icons/ArrowRight.svelte';
-  import Close from './icons/Close.svelte';
   import RestaurantCard from './components/RestaurantCard.svelte';
   import RestaurantMap from './components/RestaurantMap.svelte';
-  import RestaurantListItem from './components/RestaurantListItem.svelte'
+  import { getRestaurants } from './services/ContentfulService';
+  import type { IRestaurant } from './types/Restaurant';
+
+  import viewport from './actions/useViewportAction';
 
   let restaurants: IRestaurant[] = [];
   let selected: IRestaurant = null;
-  let menuOpen: boolean = false;
-  let selectedCity: string
+  let selectedCity: string;
 
-  const urlParams = new URLSearchParams(window.location.search)
-  const city = urlParams.has('city')
+  const urlParams = new URLSearchParams(window.location.search);
+  const city = urlParams.has('city');
 
   if (city) {
-    selectedCity = urlParams.get('city')
+    selectedCity = urlParams.get('city');
   } else {
-    selectedCity = 'hamburg'
+    selectedCity = 'hamburg';
   }
 
   const sortRestaurants = (a: IRestaurant, b: IRestaurant) => {
     if (a.position[1] > b.position[1]) {
-        return 1
-     }
-     if (a. position[1] < b.position[1]) {
-      return -1
-     }
-     return 0
-  }
-  
+      return 1;
+    }
+    if (a.position[1] < b.position[1]) {
+      return -1;
+    }
+    return 0;
+  };
+
   onMount(async () => {
-    const places: IRestaurant[] = await getRestaurants()
-    
-    const updated = places.map(p => {
+    const places: IRestaurant[] = await getRestaurants();
+
+    const updated = places.map((p) => {
       if (p.address.city.includes('ü')) {
         return {
           ...p,
@@ -43,68 +41,35 @@
             ...p.address,
             city: p.address.city.replace(/\u00fc/g, 'ue')
           }
-        }
+        };
       }
-      return p
-    })
-    restaurants = updated.filter((r) => r.address.city.toLowerCase() === selectedCity)//.sort(sortRestaurants)
-  })
+      return p;
+    });
+    restaurants = updated
+      .filter((r) => r.address.city.toLowerCase() === selectedCity)
+      .sort(sortRestaurants);
+
+    onRestaurantClick(restaurants[0]);
+  });
 
   const onRestaurantClick = (r: IRestaurant) => {
     selected = r;
   };
 
-  const onNavClose = () => {
-    selected = null;
-    menuOpen = false;
-  };
-
-  const onBack = () => {
-    selected = null;
-  };
-
-  const onNavOpen = () => {
-    menuOpen = true;
-  };
-
   const onMarkerClick = (restaurant: IRestaurant) => {
-    menuOpen = true;
     selected = restaurant;
   };
-
-  
 </script>
 
 <main class="app-container">
-  <div class="sidenav" class:sidenav-closed={!menuOpen}>
-    {#if menuOpen}
-      <div on:click={onNavClose} class="sidenav-close-icon"><Close /></div>
-    {:else}
-      <span on:click={onNavOpen}>
-        <ArrowRight />
-      </span>
-    {/if}
-    {#if menuOpen}
-      {#if !selected}
-        <div>
-          {#each restaurants as r}
-            <RestaurantListItem restaurant={r} onClick={() => onRestaurantClick(r)}/>
-          {/each}
+  <div class="sidenav">
+    <div class="restaurant-section">
+      {#each restaurants as r}
+        <div use:viewport on:enterViewport={() => onRestaurantClick(r)}>
+          <RestaurantCard restaurant={r} onClick={() => onRestaurantClick(r)} />
         </div>
-      {:else}
-        <RestaurantCard
-          {selected}
-          name={selected.name}
-          city={selected.address.city}
-          street={selected.address.street}
-          zip={selected.address.zip}
-          type={selected.restaurantType[0]}
-          website={selected.website}
-          menu={selected.menu}
-          {onBack}
-        />
-      {/if}
-    {/if}
+      {/each}
+    </div>
   </div>
 
   <div class="map-container">
@@ -115,66 +80,78 @@
         coordinates={selected != null ? selected.position : null}
       />
     {/if}
-    {#if selected !== null}
-      <div>
-        {JSON.stringify(selected)}
-      </div>
-    {/if}
   </div>
 </main>
 
 <style lang="scss">
-  main {
-    text-align: center;
-    // max-width: 240px;
-  }
+  @import '../public/global.scss';
 
   .sidenav {
-    box-shadow: 4px 0px 4px -2px lightslategray;
-    height: 100%;
-    width: 300px;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #fff;
-    overflow-x: hidden;
-    transition: width 0.2s ease-in-out;
-    padding: 12px 4px 0 0;
+    overflow-y: scroll;
+  }
+
+  main {
+    text-align: center;
+    padding: 0em;
+    margin: 0 auto;
+  }
+
+  h1 {
+    text-transform: uppercase;
+    font-size: 4em;
+    font-weight: 100;
+    margin-bottom: 8px;
+  }
+
+  .app-container {
     display: grid;
-    grid-template-rows: 30px max-content;
+    height: 100vh;
+    grid-template-rows: none;
+    grid-template-columns: 66% auto;
+  }
 
+  .header-container {
+    padding: 8px 8px 12px 8px;
+    border-bottom: 3px #000000 dotted;
+    margin: 0 20px;
+  }
+
+  .restaurant-list {
+    &-item:not(:first-child) {
+      border-top: 3px dotted darkgray;
+    }
+    &-item {
+      cursor: pointer;
+      margin: 0 20px;
+    }
+  }
+
+  .theme-toggle {
+    font-size: 10px;
+    padding-bottom: 16px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 868px) {
     h1 {
-      color: green;
-      text-transform: uppercase;
-      font-weight: 100;
-      margin: 4px;
-      transition: transform 0.1s ease-in-out;
+      font-size: 3em;
     }
+  }
 
-    &-close-icon {
-      display: flex;
-      align-items: center;
-      justify-content: end;
-      padding-right: 12px;
+  @media (max-width: 402px) {
+    h1 {
+      font-size: 2em;
     }
+  }
 
-    &-closed {
-      width: 48px;
-      //width: 400px;
-
-      @media screen and (max-width: 480px) {
-        height: 48px;
-      }
-      @media screen and (min-width: 481px) {
-        h1 {
-          transform: rotate(-90deg) translate(-100%, 0);
-        }
-      }
+  @media (min-width: 601px) {
+    .app-container {
     }
+  }
 
-    @media screen and (max-width: 480px) {
-      width: 100vw;
+  @media (min-width: 601px) and (max-width: 681px) {
+    h1 {
+      font-size: 2em;
     }
   }
 

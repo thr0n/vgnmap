@@ -1,54 +1,41 @@
 <script lang="ts">
   import type { IRestaurant } from '../types/Restaurant';
-
   import RestaurantLabel from './RestaurantLabel.svelte';
-  import RestaurantMap from './RestaurantMap.svelte';
-
-  export let selected: IRestaurant;
-  export let name;
-  export let city;
-  export let street;
-  export let zip;
-  export let type;
-  export let menu;
-  export let website;
-  export let onBack: () => void;
+  export let restaurant: IRestaurant;
+  export let onClick: (restaurant: IRestaurant) => void;
 </script>
 
-<div>
+<div class="restaurant-card" on:click={() => onClick(restaurant)}>
   <div class="restaurant-card-header">
-    <h2>{name}</h2>
-    <span on:click={onBack}> Back </span>
+    <h2>{restaurant.name}</h2>
   </div>
-  <p><RestaurantLabel {type}/>
-    {#if menu && menu.length > 0}
-    {#each menu as m}
-      <RestaurantLabel type={m} />
-    {/each}
+  <p class="label-row">
+    <RestaurantLabel type={restaurant.restaurantType[0]} />
+    {#if restaurant.menu && restaurant.menu.length > 0}
+      {#each restaurant.menu as m}
+        <RestaurantLabel type={m} />
+      {/each}
     {/if}
   </p>
-  <div>{street}</div>
-  <div>{zip} {city}</div>
-  {#if website}
+  <div>{restaurant.address.street}</div>
+  <div>{restaurant.address.zip} {restaurant.address.city}</div>
+  <!--
+  {#if restaurant.website}
     <p>
-      <a href={website}>{website}</a>
+      <a href={restaurant.website}>{restaurant.website}</a>
     </p>
   {/if}
-  <div class="detail-map">
-    <RestaurantMap
-      restaurants={[selected]}
-      onMarkerClick={null}
-      coordinates={selected.position}
-    />
-  </div>
+  -->
 </div>
 
 <style lang="scss">
-  .detail-map {
-    height: 50vh;
+  h2 {
+    margin: 0;
+  }
 
-    @media screen and (min-width: 481px) {
-      visibility: hidden;
+  .restaurant-card {
+    margin-top: 24px;
+    &-header {
     }
   }
 </style>

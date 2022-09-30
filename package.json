@@ -7,7 +7,7 @@
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "prettier": "prettier --config .prettierrc 'src/**/*.{ts,svelte}' --write"
+    "prettier": "prettier --config .prettierrc 'src/**/*.{ts,svelte,js}' --write"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",

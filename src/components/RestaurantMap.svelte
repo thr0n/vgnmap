@@ -13,48 +13,68 @@
   let map;
   let markers = new Array();
 
+  var burgerIcon = L.icon({
+    iconUrl:
+      'https://img.icons8.com/external-smashingstocks-glyph-smashing-stocks/132/external-burger-food-smashingstocks-glyph-smashing-stocks.png',
+
+    iconSize: [22, 22], // size of the icon
+    shadowSize: [50, 64], // size of the shadow
+    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+    shadowAnchor: [4, 62], // the same for the shadow
+    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+  });
+
   const deriveMapCenter = (restaurants: IRestaurant[]) => {
     if (restaurants.length > 1) {
-      const index = Math.floor(restaurants.length / 2)
-      return restaurants[index]
+      const index = Math.floor(restaurants.length / 2);
+      return restaurants[index];
     }
-    return restaurants[0]
-  }
+    return restaurants[0];
+  };
 
   afterUpdate(() => {
     if (coordinates != null) {
-      map.setView(coordinates, 17);
+      map.setView(coordinates, 15);
       const selectedMarker = markers.find((marker) => {
-        return marker._latlng.lat === coordinates[0] && marker._latlng.lng === coordinates[1]
-      })
-      selectedMarker && selectedMarker.openPopup()
+        return (
+          marker._latlng.lat === coordinates[0] &&
+          marker._latlng.lng === coordinates[1]
+        );
+      });
+      selectedMarker && selectedMarker.openPopup();
     } else {
-      const centralRestaurant = deriveMapCenter(restaurants)
+      const centralRestaurant = deriveMapCenter(restaurants);
       map.setView(centralRestaurant.position, 12);
       map.closePopup();
     }
   });
 
   const createMap = (container) => {
-    let m = L.map(container).setView([53.58, 9.99], 12);
+    let m = L.map(container, { zoomControl: false }).setView([53.58, 9.99], 12);
     L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
       {
-        attribution: `&copy;<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,
-            &copy;<a href="https://carto.com/attributions" target="_blank">CARTO</a>`,
-        subdomains: 'abcd',
-        maxZoom: 14
+        maxZoom: 16,
+        minZoom: 12,
+        attribution:
+          '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>'
       }
     ).addTo(m);
 
+    L.control
+      .zoom({
+        position: 'topright'
+      })
+      .addTo(m);
+
     restaurants.map((r) => {
-      let marker = L.marker(r.position)
-        .bindPopup('<p>' + r.name + '</p>')
+      let marker = L.marker(r.position, { icon: burgerIcon })
+        //.bindPopup('<p>' + r.name + '</p>')
         .addTo(m)
         .on('click', () => {
           onMarkerClick(r);
         });
-      markers.push(marker)
+      markers.push(marker);
     });
 
     return m;
