@@ -16,7 +16,6 @@
   var burgerIcon = L.icon({
     iconUrl:
       'https://img.icons8.com/external-smashingstocks-glyph-smashing-stocks/132/external-burger-food-smashingstocks-glyph-smashing-stocks.png',
-
     iconSize: [22, 22], // size of the icon
     shadowSize: [50, 64], // size of the shadow
     iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
@@ -33,8 +32,10 @@
   };
 
   afterUpdate(() => {
-    if (coordinates != null) {
-      map.setView(coordinates, 15);
+    if (restaurants.length === 1) {
+      map.setView(restaurants[0].position, 16);
+    } else if (coordinates != null) {
+      map.setView(coordinates, 16);
       const selectedMarker = markers.find((marker) => {
         return (
           marker._latlng.lat === coordinates[0] &&

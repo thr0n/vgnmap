@@ -4,10 +4,10 @@
   import RestaurantMap from './components/RestaurantMap.svelte';
   import { getRestaurants } from './services/ContentfulService';
   import type { IRestaurant } from './types/Restaurant';
-
-  import viewport from './actions/useViewportAction';
+  import RestaurantDetails from './components/RestaurantDetails.svelte';
 
   let restaurants: IRestaurant[] = [];
+  let allRestaurants: IRestaurant[] = [];
   let selected: IRestaurant = null;
   let selectedCity: string;
 
@@ -31,9 +31,9 @@
   };
 
   onMount(async () => {
-    const places: IRestaurant[] = await getRestaurants();
+    allRestaurants = await getRestaurants();
 
-    const updated = places.map((p) => {
+    const updated = allRestaurants.map((p) => {
       if (p.address.city.includes('ü')) {
         return {
           ...p,
@@ -49,27 +49,60 @@
       .filter((r) => r.address.city.toLowerCase() === selectedCity)
       .sort(sortRestaurants);
 
-    onRestaurantClick(restaurants[0]);
+    //onRestaurantClick(restaurants[0]);
   });
 
-  const onRestaurantClick = (r: IRestaurant) => {
-    selected = r;
+  const onRestaurantClick = (restaurant: IRestaurant) => {
+    selected = restaurant;
   };
 
   const onMarkerClick = (restaurant: IRestaurant) => {
     selected = restaurant;
   };
+
+  const handleCitySelection = (city: string) => {
+    restaurants = allRestaurants.filter(
+      (r) => r.address.city.toLocaleLowerCase() === city
+    );
+  };
 </script>
 
-<main class="app-container">
+<main class="app-container" class:app-container-mobile={selected != null}>
   <div class="sidenav">
-    <div class="restaurant-section">
-      {#each restaurants as r}
-        <div use:viewport on:enterViewport={() => onRestaurantClick(r)}>
-          <RestaurantCard restaurant={r} onClick={() => onRestaurantClick(r)} />
-        </div>
-      {/each}
-    </div>
+    {#if selected !== null}
+      <RestaurantDetails
+        onClose={() => {
+          selected = null;
+        }}
+        restaurant={selected}
+      />
+    {:else}
+      <h1>Vegan Essen In</h1>
+      <div>
+        <select
+          bind:value={selectedCity}
+          on:change={() => {
+            handleCitySelection(selectedCity);
+          }}
+        >
+          {#each ['hamburg', 'berlin', 'münchen'] as option}
+            <option value={option}>
+              {option.charAt(0).toUpperCase() + option.slice(1)}
+            </option>
+          {/each}
+        </select>
+      </div>
+      <div class="restaurant-section">
+        {#each restaurants as r}
+          <div>
+            <RestaurantCard
+              restaurant={r}
+              onClick={() => onRestaurantClick(r)}
+            />
+          </div>
+        {/each}
+      </div>
+    {/if}
   </div>
 
   <div class="map-container">
@@ -90,6 +123,10 @@
     overflow-y: scroll;
   }
 
+  .sidenav-headline {
+    border: 5px solid black;
+  }
+
   main {
     text-align: center;
     padding: 0em;
@@ -100,14 +137,17 @@
     text-transform: uppercase;
     font-size: 4em;
     font-weight: 100;
-    margin-bottom: 8px;
+    margin: 8px;
   }
 
   .app-container {
     display: grid;
     height: 100vh;
     grid-template-rows: none;
-    grid-template-columns: 66% auto;
+    grid-template-columns: 50% auto;
+    @media screen and (max-width: 480px) {
+      grid-template-columns: 1fr 0;
+    }
   }
 
   .header-container {
@@ -157,9 +197,9 @@
 
   .map-container {
     height: 100vh;
-    margin-left: 30px;
 
     @media screen and (max-width: 480px) {
+      visibility: hidden;
       margin-left: 0;
     }
   }
