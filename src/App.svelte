@@ -31,7 +31,8 @@
   };
 
   onMount(async () => {
-    allRestaurants = await getRestaurants();
+    allRestaurants = await getRestaurants()
+    allRestaurants = allRestaurants.sort(sortRestaurants)
 
     const updated = allRestaurants.map((p) => {
       if (p.address.city.includes('ü')) {
@@ -64,6 +65,7 @@
     restaurants = allRestaurants.filter(
       (r) => r.address.city.toLocaleLowerCase() === city
     );
+    //selected = null
   };
 </script>
 

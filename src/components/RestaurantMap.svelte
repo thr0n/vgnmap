@@ -32,6 +32,16 @@
   };
 
   afterUpdate(() => {
+    restaurants.map((r) => {
+      console.log("Adde " + r.name)
+      let marker = L.marker(r.position, { icon: burgerIcon })
+        .addTo(map)
+        .on('click', () => {
+          onMarkerClick(r);
+        });
+      markers.push(marker);
+    });
+
     if (restaurants.length === 1) {
       map.setView(restaurants[0].position, 16);
     } else if (coordinates != null) {
@@ -42,11 +52,13 @@
           marker._latlng.lng === coordinates[1]
         );
       });
-      selectedMarker && selectedMarker.openPopup();
+      //selectedMarker && selectedMarker.openPopup();
     } else {
+      console.log(restaurants);
       const centralRestaurant = deriveMapCenter(restaurants);
       map.setView(centralRestaurant.position, 12);
-      map.closePopup();
+
+      //map.closePopup();
     }
   });
 
