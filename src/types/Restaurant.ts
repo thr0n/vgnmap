@@ -1,12 +1,15 @@
 export type RestaurantPosition = [number, number];
 
-export interface IRestaurant {
+export class IRestaurant {
+  id: string;
   address: IAddress;
   name: string;
   position: RestaurantPosition;
   restaurantType: string[];
   website: string;
   menu: string[];
+  locations?: IAddress[];
+  multipleAddresses?: boolean = false;
 }
 
 export interface IAddress {
@@ -14,6 +17,7 @@ export interface IAddress {
   country: string;
   street: string;
   zip: string;
+  position?: RestaurantPosition;
 }
 
 export type RestaurantTypeLabel = 'omnivore' | 'vegetarian' | 'vegan';

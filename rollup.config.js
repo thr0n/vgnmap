@@ -63,6 +63,11 @@ export default {
 			),
 			"process.env.CONTENTFUL_TOKEN": JSON.stringify(process.env.CONTENTFUL_TOKEN),
 			"process.env.CONTENTFUL_SPACE_ID": JSON.stringify(process.env.CONTENTFUL_SPACE_ID),
+			"process.env.CONTENTFUL_PREVIEW_TOKEN": JSON.stringify(process.env.CONTENTFUL_PREVIEW_TOKEN),
+			"process.env.CONTENTFUL_HOST": JSON.stringify(process.env.CONTENRFUL_HOST),
+			"process.env.CONTENTFUL_PREVIEW_HOST": JSON.stringify(process.env.CONTENTFUL_PREVIEW_HOST),
+			"process.env.CONTENTFUL_PREVIEW": JSON.stringify(process.env.CONTENTFUL_PREVIEW),
+
 		  }),
 
 		// If you have external dependencies installed from

@@ -3,7 +3,11 @@
   import RestaurantCard from './components/RestaurantCard.svelte';
   import RestaurantMap from './components/RestaurantMap.svelte';
   import { getRestaurants } from './services/ContentfulService';
-  import type { IRestaurant } from './types/Restaurant';
+  import type {
+    IAddress,
+    IRestaurant,
+    RestaurantPosition
+  } from './types/Restaurant';
   import RestaurantDetails from './components/RestaurantDetails.svelte';
 
   let restaurants: IRestaurant[] = [];
@@ -31,8 +35,10 @@
   };
 
   onMount(async () => {
-    allRestaurants = await getRestaurants()
-    allRestaurants = allRestaurants.sort(sortRestaurants)
+    allRestaurants = await getRestaurants();
+    allRestaurants = allRestaurants.sort(sortRestaurants);
+
+    console.log(allRestaurants);
 
     const updated = allRestaurants.map((p) => {
       if (p.address.city.includes('ü')) {
@@ -48,6 +54,7 @@
     });
     restaurants = updated
       .filter((r) => r.address.city.toLowerCase() === selectedCity)
+      //.filter((r) => r.name.startsWith("Froindlichst") || r.name === "innerluck")
       .sort(sortRestaurants);
 
     //onRestaurantClick(restaurants[0]);
@@ -66,6 +73,20 @@
       (r) => r.address.city.toLocaleLowerCase() === city
     );
     //selected = null
+  };
+
+  const getCoordinates = (s: IRestaurant): RestaurantPosition[] => {
+    console.log('Selected = ' + selected);
+    console.log('s = ' + s);
+    if (!s) {
+      return null;
+    }
+    if (s.multipleAddresses) {
+      console.log('MULTI');
+      console.log(s.locations);
+      return s.locations.map((location) => location.position);
+    }
+    return [s.position];
   };
 </script>
 
@@ -112,7 +133,8 @@
       <RestaurantMap
         {restaurants}
         {onMarkerClick}
-        coordinates={selected != null ? selected.position : null}
+        selectedName={selected != null ? selected.name : null}
+        {selected}
       />
     {/if}
   </div>

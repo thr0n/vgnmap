@@ -4,19 +4,40 @@
   // syntax in svelte:head instead. For normal development, this is better.
   import 'leaflet/dist/leaflet.css';
   import { afterUpdate } from 'svelte';
+  import { add_render_callback } from 'svelte/internal';
   import type { IRestaurant, RestaurantPosition } from '../types/Restaurant';
 
   export let restaurants: IRestaurant[];
   export let onMarkerClick: (r: IRestaurant) => void;
-  export let coordinates: RestaurantPosition;
+  //export let coordinates: RestaurantPosition[];
+  export let selectedName: string = null;
+  export let selected: IRestaurant = null;
+
+  let src = './icons/active-marker.png';
+
+  interface MarkerState {
+    id?: string;
+  }
 
   let map;
-  let markers = new Array();
 
-  var burgerIcon = L.icon({
+  const markers_ = [];
+  const selectedMarkers = [];
+  const names: string[] = [];
+
+  let burgerIcon = L.icon({
     iconUrl:
       'https://img.icons8.com/external-smashingstocks-glyph-smashing-stocks/132/external-burger-food-smashingstocks-glyph-smashing-stocks.png',
     iconSize: [22, 22], // size of the icon
+    shadowSize: [50, 64], // size of the shadow
+    iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+    shadowAnchor: [4, 62], // the same for the shadow
+    popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+  });
+
+  let activeIcon = L.icon({
+    iconUrl: src,
+    iconSize: [34, 34], // size of the icon
     shadowSize: [50, 64], // size of the shadow
     iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
     shadowAnchor: [4, 62], // the same for the shadow
@@ -31,19 +52,104 @@
     return restaurants[0];
   };
 
-  afterUpdate(() => {
+  const initializeMarkers = (m, selected?: IRestaurant) => {
     restaurants.map((r) => {
-      console.log("Adde " + r.name)
-      let marker = L.marker(r.position, { icon: burgerIcon })
+      // let positions: RestaurantPosition[] = r.multipleAddresses ? r.locations.map(l => l.position) : [r.position]
+
+      let marker = L.marker(r.position, { icon: burgerIcon, title: r.name })
+        .addTo(m)
+        .on('click', () => {
+          onMarkerClick(r);
+        });
+
+      markers_.push({
+        name: r.name,
+        marker
+      });
+      selectedMarkers.forEach((sm) => sm.remove(map));
+    });
+  };
+
+  afterUpdate(() => {
+    if (!selected) {
+      /*Object.keys(markers).forEach(id => {
+        markers[id].remove(map)
+      })*/
+      map.setView([53.58, 9.99], 12);
+      //console.log("init...")
+      //initializeMarkers(map)
+
+      markers_.forEach((m) => {
+        m.marker.remove(map);
+        m.marker.addTo(map);
+      });
+
+      selectedMarkers.forEach((sm) => {
+        sm.remove(map);
+      });
+
+      return;
+    }
+
+    if (!selected.multipleAddresses) {
+      console.log('Selected one!');
+
+      markers_.forEach((m) => {
+        m.marker.remove(map);
+        m.marker.addTo(map);
+      });
+
+      selectedMarkers.forEach((sm) => {
+        sm.remove(map);
+      });
+
+      const filtered = markers_.filter((m) => m.name === selected.name);
+      filtered.forEach((m) => m.marker.remove(map));
+
+      const selectedMarker = L.marker(selected.position, { icon: activeIcon });
+      selectedMarker.addTo(map);
+      selectedMarkers.push(selectedMarker);
+
+      // initializeMarkers(map)
+
+      /*
+      markers_.forEach(m => m.remove(m))
+
+      const selectedMarker = L.marker(selected.position, { icon: activeIcon})
+      selectedMarker.addTo(map)
+      selectedMarkers.push(selectedMarker)
+      */
+      map.setView(selected.position, 16);
+    } else {
+      // multiple locations per restaurant
+      console.log('Multiple addresses');
+    }
+
+    //console.log("coordinates = " + coordinates)
+
+    /*
+    restaurants.map((r) => {
+      let marker = L.marker(r.position, { icon: burgerIcon})
         .addTo(map)
         .on('click', () => {
           onMarkerClick(r);
         });
-      markers.push(marker);
+      markers[r.id] = marker;
     });
+*/
 
+    /*
+    if (coordinates && coordinates.length === 1) {
+      console.log("One hit")
+    } else if (coordinates && coordinates.length > 1) {
+      console.log("Multiple hits")
+    }
+    */
+
+    /*
     if (restaurants.length === 1) {
       map.setView(restaurants[0].position, 16);
+      console.log("One res!")
     } else if (coordinates != null) {
       map.setView(coordinates, 16);
       const selectedMarker = markers.find((marker) => {
@@ -54,12 +160,12 @@
       });
       //selectedMarker && selectedMarker.openPopup();
     } else {
-      console.log(restaurants);
       const centralRestaurant = deriveMapCenter(restaurants);
       map.setView(centralRestaurant.position, 12);
 
       //map.closePopup();
     }
+    */
   });
 
   const createMap = (container) => {
@@ -80,15 +186,7 @@
       })
       .addTo(m);
 
-    restaurants.map((r) => {
-      let marker = L.marker(r.position, { icon: burgerIcon })
-        //.bindPopup('<p>' + r.name + '</p>')
-        .addTo(m)
-        .on('click', () => {
-          onMarkerClick(r);
-        });
-      markers.push(marker);
-    });
+    initializeMarkers(m);
 
     return m;
   };

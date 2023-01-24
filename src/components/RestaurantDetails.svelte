@@ -4,6 +4,7 @@
   import RestaurantMap from './RestaurantMap.svelte';
   export let restaurant: IRestaurant;
   export let onClose: () => any;
+  import RestaurantAddress from './RestaurantAddress.svelte';
   import Close from '../icons/Close.svelte';
 </script>
 
@@ -29,9 +30,11 @@
         {/each}
       {/if}
     </div>
-    <h3>Adresse:</h3>
-    <div>{restaurant.address.street}</div>
-    <div>{restaurant.address.zip} {restaurant.address.city}</div>
+
+    <RestaurantAddress
+      address={restaurant.address}
+      locations={restaurant.locations}
+    />
 
     {#if restaurant.website}
       <h3>Links:</h3>
@@ -45,17 +48,13 @@
   <div class="detail-map-container">
     <RestaurantMap
       restaurants={[restaurant]}
-      coordinates={restaurant.position}
       onMarkerClick={() => {}}
+      selected={restaurant}
     />
   </div>
 </div>
 
 <style lang="scss">
-  h3 {
-    margin-bottom: 4px;
-  }
-
   .restaurant-details {
     padding: 0px 16px 24px 16px;
 

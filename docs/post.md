@@ -17,9 +17,9 @@ With a GET request, I can then retrieve the coordinates together with other rest
 
 I created the Svelte project with degit according to these [instructions](https://svelte.dev/blog/svelte-for-new-developers).
 In addition, I use TypeScript and [SCSS](https://linguinecode.com/post/add-sass-svelte-js), which can be configured subsequently with little effort.
-The application itself consists mainly of a GET request to Contenful to read the restaurant data.
+The application itself consists mainly of a GET request to Contentful to read the restaurant data.
 I use Leaflet to display the map. 
-Now when I publish new restaurants in Contenful, they are visible in the frontend after a few seconds. 
+Now when I publish new restaurants in Contentful, they are visible in the frontend after a few seconds. 
 
 The application was [deployed](https://vgnmap.netlify.app/) on Netlify.
 A push on the main branch in Github starts the build process on Netlify, where the latest version of the project is then delivered:
