@@ -4,26 +4,17 @@
   // syntax in svelte:head instead. For normal development, this is better.
   import 'leaflet/dist/leaflet.css';
   import { afterUpdate } from 'svelte';
-  import { add_render_callback } from 'svelte/internal';
   import type { IRestaurant, RestaurantPosition } from '../types/Restaurant';
 
   export let restaurants: IRestaurant[];
   export let onMarkerClick: (r: IRestaurant) => void;
-  //export let coordinates: RestaurantPosition[];
-  export let selectedName: string = null;
   export let selected: IRestaurant = null;
 
   let src = './icons/active-marker.png';
-
-  interface MarkerState {
-    id?: string;
-  }
-
   let map;
 
   const markers_ = [];
   const selectedMarkers = [];
-  const names: string[] = [];
 
   let burgerIcon = L.icon({
     iconUrl:
@@ -52,12 +43,10 @@
     return restaurants[0];
   };
 
-  const initializeMarkers = (m, selected?: IRestaurant) => {
+  const initializeMarkersOn = (map) => {
     restaurants.map((r) => {
-      // let positions: RestaurantPosition[] = r.multipleAddresses ? r.locations.map(l => l.position) : [r.position]
-
       let marker = L.marker(r.position, { icon: burgerIcon, title: r.name })
-        .addTo(m)
+        .addTo(map)
         .on('click', () => {
           onMarkerClick(r);
         });
@@ -66,106 +55,42 @@
         name: r.name,
         marker
       });
-      selectedMarkers.forEach((sm) => sm.remove(map));
+    });
+  };
+
+  const resetMarkers = () => {
+    markers_.forEach((m) => {
+      m.marker.remove(map);
+      m.marker.addTo(map);
+    });
+    selectedMarkers.forEach((sm) => {
+      sm.remove(map);
     });
   };
 
   afterUpdate(() => {
     if (!selected) {
-      /*Object.keys(markers).forEach(id => {
-        markers[id].remove(map)
-      })*/
       map.setView([53.58, 9.99], 12);
-      //console.log("init...")
-      //initializeMarkers(map)
-
-      markers_.forEach((m) => {
-        m.marker.remove(map);
-        m.marker.addTo(map);
-      });
-
-      selectedMarkers.forEach((sm) => {
-        sm.remove(map);
-      });
+      resetMarkers();
 
       return;
     }
 
     if (!selected.multipleAddresses) {
       console.log('Selected one!');
-
-      markers_.forEach((m) => {
-        m.marker.remove(map);
-        m.marker.addTo(map);
-      });
-
-      selectedMarkers.forEach((sm) => {
-        sm.remove(map);
-      });
+      resetMarkers();
 
       const filtered = markers_.filter((m) => m.name === selected.name);
       filtered.forEach((m) => m.marker.remove(map));
-
       const selectedMarker = L.marker(selected.position, { icon: activeIcon });
       selectedMarker.addTo(map);
       selectedMarkers.push(selectedMarker);
 
-      // initializeMarkers(map)
-
-      /*
-      markers_.forEach(m => m.remove(m))
-
-      const selectedMarker = L.marker(selected.position, { icon: activeIcon})
-      selectedMarker.addTo(map)
-      selectedMarkers.push(selectedMarker)
-      */
       map.setView(selected.position, 16);
     } else {
       // multiple locations per restaurant
       console.log('Multiple addresses');
     }
-
-    //console.log("coordinates = " + coordinates)
-
-    /*
-    restaurants.map((r) => {
-      let marker = L.marker(r.position, { icon: burgerIcon})
-        .addTo(map)
-        .on('click', () => {
-          onMarkerClick(r);
-        });
-      markers[r.id] = marker;
-    });
-*/
-
-    /*
-    if (coordinates && coordinates.length === 1) {
-      console.log("One hit")
-    } else if (coordinates && coordinates.length > 1) {
-      console.log("Multiple hits")
-    }
-    */
-
-    /*
-    if (restaurants.length === 1) {
-      map.setView(restaurants[0].position, 16);
-      console.log("One res!")
-    } else if (coordinates != null) {
-      map.setView(coordinates, 16);
-      const selectedMarker = markers.find((marker) => {
-        return (
-          marker._latlng.lat === coordinates[0] &&
-          marker._latlng.lng === coordinates[1]
-        );
-      });
-      //selectedMarker && selectedMarker.openPopup();
-    } else {
-      const centralRestaurant = deriveMapCenter(restaurants);
-      map.setView(centralRestaurant.position, 12);
-
-      //map.closePopup();
-    }
-    */
   });
 
   const createMap = (container) => {
@@ -186,7 +111,7 @@
       })
       .addTo(m);
 
-    initializeMarkers(m);
+    initializeMarkersOn(m);
 
     return m;
   };
