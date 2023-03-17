@@ -1,57 +1,58 @@
 <script lang="ts">
-  import type { IAddress } from "../types/Restaurant";
-  import RestaurantTag from "./RestaurantTag.svelte";
-
-  export let name: string;
-  export let website: string = null;
-  export let address: IAddress;
-  export let restaurantType: string;
-  export let menu: string[] = [];
+  import type { IRestaurant } from '../types/Restaurant';
+  import RestaurantLabel from './RestaurantLabel.svelte';
+  export let restaurant: IRestaurant;
+  export let onClick: (restaurant: IRestaurant) => void;
 </script>
 
-<div class="restaurant-card" id={name}>
-  <h2>
-    {name}
-  </h2>
-  <div class="restaurant-tags">
-    <RestaurantTag label={restaurantType} type={restaurantType} />
-    {#each menu as entry}
-      <RestaurantTag label={entry} type="food" />
-    {/each}
+<div
+  class="restaurant-card"
+  on:click={() => onClick(restaurant)}
+  on:keydown={() => onClick(restaurant)}
+>
+  <div class="restaurant-card-header">
+    <h2>{restaurant.name}</h2>
   </div>
-  <div class="restaurant-address">
-    <span>{address.street}</span>
-    <span>{address.zip} {address.city}</span>
-  </div>
-  {#if website}
-  <a class="restaurant-link" href={website} target="_blank">{website}</a>
-  {/if}
+  <p class="label-row">
+    <RestaurantLabel type={restaurant.restaurantType[0]} />
+    {#if restaurant.menu && restaurant.menu.length > 0}
+      {#each restaurant.menu as m}
+        <RestaurantLabel type={m} />
+      {/each}
+    {/if}
+  </p>
+  <!--
+  <div>{restaurant.address.street}</div>
+  <div>{restaurant.address.zip} {restaurant.address.city}</div>
+  -->
 </div>
 
 <style lang="scss">
-  .restaurant-card {
-    margin: 20px 20px;
+  h2 {
+    margin: 0;
+  }
 
-    img {
-      height: 200px;
+  .restaurant-card {
+    display: block;
+    top: 0px;
+    background-color: #f2f4f5;
+    border-radius: 4px;
+    padding: 32px 24px;
+    margin: 12px;
+    text-decoration: none;
+    overflow: hidden;
+    border: 1px solid #e6e9eb;
+
+    &:hover {
+      border: 1px solid #c0c9cc;
+      box-shadow: 0px 0px 999px 999px rgba(255, 255, 255, 0.5);
+      z-index: 500;
     }
   }
 
-  .restaurant-tags {
-    margin: 4px 0;
-    display: flex;
-    justify-content: center;
-    column-gap: 2px;
-  }
-
-  .restaurant-address {
-    display: grid;
-    padding: 8px;
-    grid-template-rows: 1fr 1fr;
-    row-gap: 4px;
-  }
-
-  .restaurant-link {
-    font-size: 14px;
+  .card3:hover {
+    p {
+      color: #00838d;
+    }
   }
 </style>

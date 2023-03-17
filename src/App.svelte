@@ -1,109 +1,126 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { getRestaurants } from "./services/ContentfulService";
-  import type { IRestaurant, RestaurantPosition } from "./types/Restaurant";
-  import RestaurantMap from "./components/RestaurantMap.svelte";
-  import RestaurantCard from "./components/RestaurantCard.svelte";
-  import CitySelector from "./components/CitySelector.svelte";
-  import "../public/global.scss";
+  import { onMount } from 'svelte';
+  import RestaurantCard from './components/RestaurantCard.svelte';
+  import RestaurantMap from './components/RestaurantMap.svelte';
+  import { getRestaurants } from './services/ContentfulService';
+  import type { IRestaurant } from './types/Restaurant';
+  import RestaurantDetails from './components/RestaurantDetails.svelte';
 
   let restaurants: IRestaurant[] = [];
-  let zoom = 12;
-  let detailZoom = false;
-  let selectedStoreLatLon: RestaurantPosition = [53.58, 9.99];
-  let selectedCity = "Hamburg";
-  let theme = "light";
-  $: themeLabel = theme === "light" ? "Lights off" : "Lights on";
+  let allRestaurants: IRestaurant[] = [];
+  let selected: IRestaurant = null;
+  let selectedCity: string;
 
-  const onRestaurantClick = (position: RestaurantPosition) => {
-    selectedStoreLatLon = position;
-    detailZoom = true;
+  const urlParams = new URLSearchParams(window.location.search);
+  const city = urlParams.has('city');
+
+  if (city) {
+    selectedCity = urlParams.get('city');
+  } else {
+    selectedCity = 'hamburg';
+  }
+
+  const sortRestaurants = (a: IRestaurant, b: IRestaurant) => {
+    if (a.position[1] > b.position[1]) {
+      return 1;
+    }
+    if (a.position[1] < b.position[1]) {
+      return -1;
+    }
+    return 0;
   };
-
-  const onCitySelection = (location: RestaurantPosition, city: string) => {
-    selectedCity = city;
-    selectedStoreLatLon = location;
-    detailZoom = false;
-  };
-
-  $: restaurantsToShow = restaurants
-    .filter((r) => r.address.city === selectedCity)
-    .sort((a, b) =>
-      a.position[1] > b.position[1] ? 1 : a.position[1] < b.position[1] ? -1 : 0
-    );
 
   onMount(async () => {
-    restaurants = await getRestaurants();
-    if (theme === "dark") {
-      document.body.classList.add("dark-mode");
-    }
+    allRestaurants = await getRestaurants();
+    allRestaurants = allRestaurants.sort(sortRestaurants);
+
+    const updated = allRestaurants.map((p) => {
+      if (p.address.city.includes('ü')) {
+        return {
+          ...p,
+          address: {
+            ...p.address,
+            city: p.address.city.replace(/\u00fc/g, 'ue')
+          }
+        };
+      }
+      return p;
+    });
+    restaurants = updated
+      .filter((r) => r.address.city.toLowerCase() === selectedCity)
+      .sort(sortRestaurants);
   });
+
+  const onRestaurantClick = (restaurant: IRestaurant) => {
+    selected = restaurant;
+  };
+
+  const onMarkerClick = (restaurant: IRestaurant) => {
+    selected = restaurant;
+  };
+
+  const handleCitySelection = (city: string) => {
+    restaurants = allRestaurants.filter(
+      (r) => r.address.city.toLocaleLowerCase() === city
+    );
+  };
 </script>
 
-<main>
-  <div class="app-container">
-    <div
-      class="restaurant-section"
-      class:restaurant-section-dark={theme === "dark"}
-    >
-      <div
-        class="header-container"
-        class:header-container-dark={theme === "dark"}
-      >
-        <h1 class:darkMode={theme === "dark"}>Vegan essen in:</h1>
-        <div class="header-controls">
-          <CitySelector {restaurants} {selectedCity} {onCitySelection} />
-        </div>
+<main class="app-container" class:app-container-mobile={selected != null}>
+  <div class="sidenav">
+    {#if selected !== null}
+      <RestaurantDetails
+        onClose={() => {
+          selected = null;
+        }}
+        restaurant={selected}
+      />
+    {:else}
+      <h1>Vegan Essen In</h1>
+      <div>
+        <select
+          bind:value={selectedCity}
+          on:change={() => {
+            handleCitySelection(selectedCity);
+          }}
+        >
+          {#each ['hamburg', 'berlin', 'münchen'] as option}
+            <option value={option}>
+              {option.charAt(0).toUpperCase() + option.slice(1)}
+            </option>
+          {/each}
+        </select>
       </div>
-      <div class="restaurant-list">
-        {#each restaurantsToShow as restaurant (restaurant.name)}
-          <div
-            class="restaurant-list-item"
-            on:click={() => {
-              onRestaurantClick(restaurant.position);
-            }}
-          >
+      <div class="restaurant-section">
+        {#each restaurants as r}
+          <div>
             <RestaurantCard
-              address={restaurant.address}
-              name={restaurant.name}
-              restaurantType={restaurant.restaurantType[0]}
-              menu={restaurant.menu}
-              website={restaurant.website}
+              restaurant={r}
+              onClick={() => onRestaurantClick(r)}
             />
           </div>
         {/each}
       </div>
-      <span
-        class="theme-toggle"
-        on:click={() => {
-          // TODO refactor
-          if (theme === "dark") {
-            theme = "light";
-          } else {
-            theme = "dark";
-          }
-          document.body.classList.toggle("dark-mode");
-        }}
-        >{themeLabel}
-      </span>
-    </div>
-    <div class="map-container">
-      {#if restaurants.length > 0}
-        <RestaurantMap
-          {restaurants}
-          centerCoordinates={selectedStoreLatLon}
-          {zoom}
-          {detailZoom}
-          onMarkerClick={onRestaurantClick}
-          {theme}
-        />
-      {/if}
-    </div>
+    {/if}
+  </div>
+
+  <div class="map-container">
+    {#if restaurants.length > 0}
+      <RestaurantMap {restaurants} {onMarkerClick} {selected} />
+    {/if}
   </div>
 </main>
 
 <style lang="scss">
-  @import "../public/global.scss";
+  @import '../public/global.scss';
+
+  .sidenav {
+    overflow-y: scroll;
+  }
+
+  .sidenav-headline {
+    border: 5px solid black;
+  }
 
   main {
     text-align: center;
@@ -112,34 +129,26 @@
   }
 
   h1 {
-    color: $primary-color;
     text-transform: uppercase;
     font-size: 4em;
     font-weight: 100;
-    margin-bottom: 8px;
-  }
-
-  .darkMode {
-    color: $primary-color-dark;
+    margin: 8px;
   }
 
   .app-container {
     display: grid;
-    grid-template-rows: auto 300px;
     height: 100vh;
+    grid-template-rows: none;
+    grid-template-columns: 50% auto;
+    @media screen and (max-width: 480px) {
+      grid-template-columns: 1fr 0;
+    }
   }
 
   .header-container {
     padding: 8px 8px 12px 8px;
-    border-bottom: 3px $primary-color dotted;
+    border-bottom: 3px #000000 dotted;
     margin: 0 20px;
-    &-dark {
-      border-color: $primary-color-dark;
-    }
-  }
-
-  .restaurant-section {
-    overflow-y: scroll;
   }
 
   .restaurant-list {
@@ -172,14 +181,21 @@
 
   @media (min-width: 601px) {
     .app-container {
-      grid-template-rows: none;
-      grid-template-columns: 3fr 2fr;
     }
   }
 
   @media (min-width: 601px) and (max-width: 681px) {
     h1 {
       font-size: 2em;
+    }
+  }
+
+  .map-container {
+    height: 100vh;
+
+    @media screen and (max-width: 480px) {
+      visibility: hidden;
+      margin-left: 0;
     }
   }
 </style>

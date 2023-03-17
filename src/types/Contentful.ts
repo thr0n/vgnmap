@@ -1,10 +1,15 @@
-export interface ContentfulRestaurant {
+export class ContentfulRestaurant {
   address: ContentfulAddress;
+  locations: ContentfulAddress[];
   name: string;
   position: { lon: number; lat: number };
   restaurantType: string[];
   website: string;
   menu: string[];
+  multipleAddresses: boolean = false;
+  sys: {
+    id: string;
+  };
 }
 
 export interface ContentfulAddress {
@@ -13,5 +18,6 @@ export interface ContentfulAddress {
     country: string;
     street: string;
     zip: string;
+    position: { lon: number; lat: number };
   };
 }

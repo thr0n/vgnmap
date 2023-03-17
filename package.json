@@ -7,7 +7,7 @@
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "prettier": "npx prettier --write ./src"
+    "prettier": "prettier --config .prettierrc 'src/**/*.{ts,svelte,js}' --write"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
@@ -16,7 +16,7 @@
     "@rollup/plugin-typescript": "^8.3.0",
     "@tsconfig/svelte": "^2.0.1",
     "@types/leaflet": "^1.7.5",
-    "node-sass": "^6.0.1",
+    "dotenv": "^16.0.3",
     "prettier": "^2.4.1",
     "prettier-plugin-svelte": "^2.4.0",
     "rollup": "^2.59.0",
@@ -25,6 +25,7 @@
     "rollup-plugin-scss": "^3.0.0",
     "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-terser": "^7.0.2",
+    "sass": "^1.57.1",
     "svelte": "^3.44.1",
     "svelte-check": "^2.2.8",
     "svelte-preprocess": "^4.9.8",
@@ -32,10 +33,8 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "axios": "^0.24.0",
-    "contentful": "^9.1.4",
-    "dotenv": "^10.0.0",
-    "leaflet": "^1.7.1",
-    "sirv-cli": "^1.0.14"
+    "contentful": "^9.1.34",
+    "leaflet": "^1.8.0",
+    "sirv-cli": "^2.0.0"
   }
 }
