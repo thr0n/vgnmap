@@ -4,7 +4,7 @@
   // syntax in svelte:head instead. For normal development, this is better.
   import 'leaflet/dist/leaflet.css';
   import { afterUpdate } from 'svelte';
-  import type { IRestaurant, RestaurantPosition } from '../types/Restaurant';
+  import type { IRestaurant } from '../types/Restaurant';
 
   export let restaurants: IRestaurant[];
   export let onMarkerClick: (r: IRestaurant) => void;
@@ -14,7 +14,7 @@
   let map;
 
   const markers_ = [];
-  const selectedMarkers = [];
+  let selectedMarkers = [];
 
   let burgerIcon = L.icon({
     iconUrl:
@@ -30,7 +30,7 @@
     iconUrl: src,
     iconSize: [34, 34], // size of the icon
     shadowSize: [50, 64], // size of the shadow
-    iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+    iconAnchor: [5, 5], // point of the icon which will correspond to marker's location
     shadowAnchor: [4, 62], // the same for the shadow
     popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
   });
@@ -45,16 +45,33 @@
 
   const initializeMarkersOn = (map) => {
     restaurants.map((r) => {
-      let marker = L.marker(r.position, { icon: burgerIcon, title: r.name })
-        .addTo(map)
-        .on('click', () => {
-          onMarkerClick(r);
+      if (r.multipleAddresses) {
+        r.locations.map((location) => {
+          let marker = L.marker(location.position, {
+            icon: burgerIcon,
+            title: r.name
+          })
+            .addTo(map)
+            .on('click', () => {
+              onMarkerClick(r);
+            });
+          markers_.push({
+            name: r.name,
+            marker
+          });
         });
+      } else {
+        let marker = L.marker(r.position, { icon: burgerIcon, title: r.name })
+          .addTo(map)
+          .on('click', () => {
+            onMarkerClick(r);
+          });
 
-      markers_.push({
-        name: r.name,
-        marker
-      });
+        markers_.push({
+          name: r.name,
+          marker
+        });
+      }
     });
   };
 
@@ -66,35 +83,50 @@
     selectedMarkers.forEach((sm) => {
       sm.remove(map);
     });
+    selectedMarkers = [];
   };
 
   afterUpdate(() => {
-    if (!selected) {
-      map.setView([53.58, 9.99], 12);
-      resetMarkers();
+    initializeMarkersOn(map);
+    resetMarkers();
 
+    if (!selected) {
+      map.setView(deriveMapCenter(restaurants).position, 12);
       return;
     }
 
+    // TODO: refactor if/else content
     if (!selected.multipleAddresses) {
-      console.log('Selected one!');
-      resetMarkers();
-
       const filtered = markers_.filter((m) => m.name === selected.name);
       filtered.forEach((m) => m.marker.remove(map));
       const selectedMarker = L.marker(selected.position, { icon: activeIcon });
       selectedMarker.addTo(map);
       selectedMarkers.push(selectedMarker);
-
       map.setView(selected.position, 16);
     } else {
-      // multiple locations per restaurant
-      console.log('Multiple addresses');
+      const filtered = markers_.filter((m) => {
+        return m.name === selected.name;
+      });
+      filtered.forEach((m) => m.marker.remove(map));
+
+      selected.locations.map((location) => {
+        const selectedMarker = L.marker(location.position, {
+          icon: activeIcon
+        });
+        selectedMarker.addTo(map);
+        selectedMarkers.push(selectedMarker);
+      });
+
+      let group = L.featureGroup(selectedMarkers);
+      map.fitBounds(group.getBounds());
     }
   });
 
   const createMap = (container) => {
-    let m = L.map(container, { zoomControl: false }).setView([53.58, 9.99], 12);
+    let map = L.map(container, { zoomControl: false }).setView(
+      [53.58, 9.99],
+      12
+    );
     L.tileLayer(
       'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
       {
@@ -103,17 +135,17 @@
         attribution:
           '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>'
       }
-    ).addTo(m);
+    ).addTo(map);
 
     L.control
       .zoom({
         position: 'topright'
       })
-      .addTo(m);
+      .addTo(map);
 
-    initializeMarkersOn(m);
+    initializeMarkersOn(map);
 
-    return m;
+    return map;
   };
 
   const mapAction = (container) => {
