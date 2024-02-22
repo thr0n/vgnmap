@@ -30,6 +30,16 @@
  - Replace App.svelte with actual App
  - Prefix environment variables in .env with `VITE_` and replace all `process.env.VARIABLE`s with `import.meta.env.VITE_VARIABLE` 
 
+ ## npm run build 
+
+ ```bash
+ ✓ 46 modules transformed.
+dist/index.html                   1.23 kB │ gzip:  0.66 kB
+dist/assets/index-DfWY1ihM.css   19.01 kB │ gzip:  7.45 kB
+dist/assets/index-CPtvyui6.js   265.34 kB │ gzip: 84.48 kB
+✓ built in 857ms
+```
+
  ## Resources:
 
  https://vitejs.dev/guide/
