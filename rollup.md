@@ -22,17 +22,36 @@
  npm create vite@latest
  ```
 
- - Choose svelte
- - Copy files from ./<project-name> to project directory
- - Drop package-lock.json and run npm install
- - Add dependencies: leaflet and contentful
- - Add dev dependencies: sass
- - Replace App.svelte with actual App
- - Prefix environment variables in .env with `VITE_` and replace all `process.env.VARIABLE`s with `import.meta.env.VITE_VARIABLE` 
+- Choose svelte
+- Copy files from ./<project-name> to project directory
+- Drop package-lock.json and run npm install
+- Add dependencies: leaflet and contentful
+- Add dev dependencies: sass
+- Replace App.svelte with actual App
+- Prefix environment variables in .env with `VITE_` and replace all `process.env.VARIABLE`s with `import.meta.env.VITE_VARIABLE` 
 
  ## npm run build 
 
+Using rollup:
+```bash
+➜  vgnmap git:(main) ✗ npm run build
+
+> svelte-app@1.0.0 build
+> rollup -c
+
+
+src/main.ts → public/build/bundle.js...
+
+created public/build/bundle.js in 2.8s
+```
+
+Using Vite:
+
  ```bash
+➜  vgnmap git:(feat/replace-rollup) rm -rf node_modules && npm i && npm run build
+> vgnmap@0.0.0 build
+> vite build
+
  ✓ 46 modules transformed.
 dist/index.html                   1.23 kB │ gzip:  0.66 kB
 dist/assets/index-DfWY1ihM.css   19.01 kB │ gzip:  7.45 kB
