@@ -1,9 +1,9 @@
-import { EntryCollection, createClient } from 'contentful';
+import { createClient, type EntryCollection, type Entry } from 'contentful';
 import type {
   ContentfulAddress,
   ContentfulRestaurant
-} from '../types/Contentful';
-import type { IAddress, IRestaurant } from '../types/Restaurant';
+} from '../types/Contentful.js';
+import type { IAddress, IRestaurant } from '../types/Restaurant.js';
 
 const preview = import.meta.env.VITE_CONTENTFUL_PREVIEW;
 
@@ -21,7 +21,7 @@ const client = createClient({
   host
 });
 
-const hasMultipleLocations = (locations) => {
+const hasMultipleLocations = (locations: any) => {
   return locations && locations.length > 1;
 };
 
@@ -31,19 +31,16 @@ export async function getRestaurants(): Promise<IRestaurant[]> {
       content_type: 'restaurant'
     });
 
-  return result.items.map((i) => {
+  return result.items.map((i: Entry<ContentfulRestaurant>) => {
     const { id } = i.sys;
     const { name, position, restaurantType, website, menu } = i.fields;
     const { city, country, street, zip } = i.fields.address.fields; // fails on multiple addresses
 
     const multipleAddresses = hasMultipleLocations(i.fields.locations);
-    console.log(i.fields.locations);
 
     const locations: IAddress[] = multipleAddresses
       ? i.fields.locations.map((location: ContentfulAddress) => {
           const { city, country, street, zip, position } = location.fields;
-          console.log(location.fields);
-          console.log(location.fields.position);
           return {
             city,
             country,

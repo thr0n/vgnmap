@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { IAddress } from '../types/Restaurant';
+  import type { IAddress } from '../types/Restaurant.ts';
 
   export let address: IAddress;
-  export let locations: IAddress[];
+  export let locations: IAddress[] | undefined;
 
   const headline = locations && locations.length > 0 ? 'Adressen' : 'Adresse';
 </script>
@@ -23,10 +23,6 @@
 </div>
 
 <style lang="scss">
-  h3 {
-    //margin-bottom: 4px;
-  }
-
   .address-line:not(:last-child) {
     margin-bottom: 12px;
   }

@@ -1,6 +1,6 @@
 export type RestaurantPosition = [number, number];
 
-export class IRestaurant {
+export type IRestaurant = {
   id: string;
   address: IAddress;
   name: string;
@@ -9,8 +9,8 @@ export class IRestaurant {
   website: string;
   menu: string[];
   locations?: IAddress[];
-  multipleAddresses?: boolean = false;
-}
+  multipleAddresses?: boolean;
+};
 
 export interface IAddress {
   city: string;

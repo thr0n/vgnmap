@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { IRestaurant } from '../types/Restaurant';
+  import type { IRestaurant } from '../types/Restaurant.ts';
   import RestaurantLabel from './RestaurantLabel.svelte';
   export let restaurant: IRestaurant;
   export let onClick: (restaurant: IRestaurant) => void;
@@ -21,10 +21,6 @@
       {/each}
     {/if}
   </p>
-  <!--
-  <div>{restaurant.address.street}</div>
-  <div>{restaurant.address.zip} {restaurant.address.city}</div>
-  -->
 </div>
 
 <style lang="scss">
@@ -47,12 +43,6 @@
       border: 1px solid #c0c9cc;
       box-shadow: 0px 0px 999px 999px rgba(255, 255, 255, 0.5);
       z-index: 500;
-    }
-  }
-
-  .card3:hover {
-    p {
-      color: #00838d;
     }
   }
 </style>
