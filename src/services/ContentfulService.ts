@@ -5,16 +5,20 @@ import type {
 } from '../types/Contentful';
 import type { IAddress, IRestaurant } from '../types/Restaurant';
 
-const preview = process.env.CONTENTFUL_PREVIEW;
+const preview = import.meta.env.VITE_CONTENTFUL_PREVIEW;
+
+const accessToken = preview
+? import.meta.env.VITE_CONTENTFUL_PREVIEW_TOKEN
+: import.meta.env.VITE_CONTENTFUL_TOKEN
+
+const host = preview
+? import.meta.env.VITE_CONTENTFUL_PREVIEW_HOST
+: import.meta.env.VITE_CONTENTFUL_HOST
 
 const client = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID,
-  accessToken: preview
-    ? process.env.CONTENTFUL_PREVIEW_TOKEN
-    : process.env.CONTENTFUL_TOKEN,
-  host: preview
-    ? process.env.CONTENTFUL_PREVIEW_HOST
-    : process.env.CONTENTFUL_HOST
+  space: import.meta.env.VITE_CONTENTFUL_SPACE_ID,
+  accessToken,
+  host
 });
 
 const hasMultipleLocations = (locations) => {
