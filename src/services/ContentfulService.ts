@@ -5,11 +5,19 @@ import type {
 } from '../types/Contentful.js';
 import type { IAddress, IRestaurant } from '../types/Restaurant.js';
 
-const preview = import.meta.env.VITE_CONTENTFUL_PREVIEW;
+const deriveToken = (preview: boolean): string => {
+  const accessToken = preview
+    ? import.meta.env.VITE_CONTENTFUL_PREVIEW_TOKEN
+    : import.meta.env.VITE_CONTENTFUL_TOKEN;
+  return accessToken;
+};
 
-const accessToken = preview
-  ? import.meta.env.VITE_CONTENTFUL_PREVIEW_TOKEN
-  : import.meta.env.VITE_CONTENTFUL_TOKEN;
+const hasMultipleLocations = (locations: any) => {
+  return locations && locations.length > 1;
+};
+
+const preview = import.meta.env.VITE_CONTENTFUL_PREVIEW;
+const accessToken = deriveToken(preview);
 
 const host = preview
   ? import.meta.env.VITE_CONTENTFUL_PREVIEW_HOST
@@ -20,10 +28,6 @@ const client = createClient({
   accessToken,
   host
 });
-
-const hasMultipleLocations = (locations: any) => {
-  return locations && locations.length > 1;
-};
 
 export async function getRestaurants(): Promise<IRestaurant[]> {
   const result: EntryCollection<ContentfulRestaurant> =
