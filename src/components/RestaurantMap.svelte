@@ -4,17 +4,17 @@
   // syntax in svelte:head instead. For normal development, this is better.
   import 'leaflet/dist/leaflet.css';
   import { afterUpdate } from 'svelte';
-  import type { IRestaurant } from '../types/Restaurant';
+  import type { IRestaurant } from '../types/Restaurant.ts';
 
   export let restaurants: IRestaurant[];
   export let onMarkerClick: (r: IRestaurant) => void;
-  export let selected: IRestaurant = null;
+  export let selected: IRestaurant | null = null;
 
   let src = './icons/active-marker.png';
-  let map;
+  let map: L.Map;
 
-  const markers_ = [];
-  let selectedMarkers = [];
+  const markers_: any[] = [];
+  let selectedMarkers: any[] = [];
 
   let burgerIcon = L.icon({
     iconUrl:
@@ -43,8 +43,8 @@
     return restaurants[0];
   };
 
-  const initializeMarkersOn = (map) => {
-    restaurants.map((r) => {
+  const initializeMarkersOn = (map: L.Map) => {
+    restaurants.map((r: IRestaurant) => {
       if (r.multipleAddresses) {
         r.locations.map((location) => {
           let marker = L.marker(location.position, {
@@ -148,7 +148,7 @@
     return map;
   };
 
-  const mapAction = (container) => {
+  const mapAction = (container: any) => {
     map = createMap(container);
     return {
       destroy: () => {

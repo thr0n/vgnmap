@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import RestaurantCard from './components/RestaurantCard.svelte';
   import RestaurantMap from './components/RestaurantMap.svelte';
-  import { getRestaurants } from './services/ContentfulService';
-  import type { IRestaurant } from './types/Restaurant';
+  import { getRestaurants } from './services/ContentfulService.ts';
+  import type { IRestaurant } from './types/Restaurant.ts';
   import RestaurantDetails from './components/RestaurantDetails.svelte';
 
   let restaurants: IRestaurant[] = [];

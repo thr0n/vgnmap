@@ -1,4 +1,6 @@
-export class ContentfulRestaurant {
+export type ContentfulRestaurant = {
+  fields: any;
+  contentTypeId: any;
   address: ContentfulAddress;
   locations: ContentfulAddress[];
   name: string;
@@ -6,11 +8,11 @@ export class ContentfulRestaurant {
   restaurantType: string[];
   website: string;
   menu: string[];
-  multipleAddresses: boolean = false;
+  multipleAddresses: boolean;
   sys: {
     id: string;
   };
-}
+};
 
 export interface ContentfulAddress {
   fields: {

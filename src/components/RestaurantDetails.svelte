@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { IRestaurant } from '../types/Restaurant';
+  import type { IRestaurant } from '../types/Restaurant.ts';
   import RestaurantLabel from './RestaurantLabel.svelte';
   import RestaurantMap from './RestaurantMap.svelte';
   export let restaurant: IRestaurant;
   export let onClose: () => any;
   import RestaurantAddress from './RestaurantAddress.svelte';
-  import Close from '../icons/Close.svelte';
+  import Close from './icons/Close.svelte';
 </script>
 
 <div class="restaurant-details">
